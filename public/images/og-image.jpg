@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#c55ffc;stop-opacity:0.1" />
+      <stop offset="100%" style="stop-color:#7954a1;stop-opacity:0.1" />
+    </linearGradient>
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#c55ffc;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7954a1;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="white"/>
+  <rect width="1200" height="630" fill="url(#bgGrad)"/>
+  
+  <!-- Logo Circle -->
+  <circle cx="300" cy="315" r="80" fill="url(#textGrad)"/>
+  <text x="300" y="340" font-family="Arial, sans-serif" font-size="60" font-weight="bold" fill="white" text-anchor="middle">H</text>
+  
+  <!-- Main Text -->
+  <text x="450" y="280" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="url(#textGrad)">H.E.A.R.T. Beat Improv</text>
+  <text x="450" y="330" font-family="Arial, sans-serif" font-size="28" fill="#323e42">Bangalore's Premier Improv Comedy Community</text>
+  <text x="450" y="370" font-family="Arial, sans-serif" font-size="24" fill="#7954a1">Join us for workshops, performances, and laughter!</text>
+  
+  <!-- Decorative Elements -->
+  <circle cx="1000" cy="150" r="40" fill="#efdcf9" opacity="0.6"/>
+  <circle cx="1100" cy="500" r="30" fill="#c55ffc" opacity="0.3"/>
+  <circle cx="150" cy="100" r="25" fill="#7954a1" opacity="0.4"/>
+</svg>

@@ -1,0 +1,450 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { createFullSlug } from "../utils/slug.js";
+import { URLS } from "../constants.js";
+import { allEvents as events } from '../content/events/all-events.js';
+
+// Sample events data - in a real app, this would come from a CMS or API
+const allEvents = events.map((event) => ({
+  ...event,
+  date: new Date(event.date).toLocaleDateString("en-IN", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }),
+  time: event.time,
+  venue: event.venue,
+  description: event.description,
+  price: event.price,
+  category: event.category,
+  level: event.level,
+  duration: event.duration,
+  spots: event.spots,
+  booked: event.booked,
+  image: event.image,
+}));
+
+const categories = [
+  { value: "all", label: "All Events" },
+  { value: "workshop", label: "Workshops" },
+  { value: "performance", label: "Performances" },
+  { value: "corporate", label: "Corporate" },
+];
+
+const levels = [
+  { value: "all", label: "All Levels" },
+  { value: "beginner", label: "Beginner" },
+  { value: "intermediate", label: "Intermediate" },
+  { value: "advanced", label: "Advanced" },
+];
+
+// Process events data for display
+const processedEvents = allEvents.map((event) => {
+  const spotsLeft = event.spots - event.booked;
+  const isAlmostFull = spotsLeft < 6;
+  const isSoldOut = spotsLeft < 1;
+
+  return {
+    ...event,
+    spotsLeft,
+    isAlmostFull,
+    isSoldOut,
+    levelBadgeClass:
+      event.level === "beginner"
+        ? "bg-green-100 text-green-800"
+        : event.level === "intermediate"
+          ? "bg-yellow-100 text-yellow-800"
+          : event.level === "advanced"
+            ? "bg-red-100 text-red-800"
+            : "bg-blue-100 text-blue-800",
+    levelText:
+      event.level === "all"
+        ? "All Levels"
+        : event.level.charAt(0).toUpperCase() + event.level.slice(1),
+    categoryIcon:
+      event.category === "workshop"
+        ? "🎪"
+        : event.category === "performance"
+          ? "🎭"
+          : event.category === "corporate"
+            ? "💼"
+            : "🎨",
+    spotsText: isSoldOut
+      ? "Sold Out"
+      : isAlmostFull
+        ? `Only ${spotsLeft} spots left!`
+        : `${spotsLeft} spots available`,
+    buttonClass: isAlmostFull
+      ? "bg-orange-500 text-white hover:bg-orange-600"
+      : "bg-primary text-white hover:bg-accent",
+    buttonText: isAlmostFull ? "Book Now!" : "Register",
+  };
+});
+---
+
+<BaseLayout
+  title="Events - H.E.A.R.T. Beat Improv"
+  description="Discover upcoming improv comedy workshops, performances, and events in Bangalore. Join H.E.A.R.T. Beat Improv for an unforgettable experience."
+>
+  <!-- Hero Section -->
+  <section class="py-20 gradient-bg">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-12">
+        <h1 class="font-display text-4xl md:text-6xl font-bold mb-6">
+          <span class="gradient-text">Upcoming Events</span>
+        </h1>
+        <p class="text-xl text-dark/80 max-w-3xl mx-auto">
+          Join us for workshops, performances, and community gatherings. From
+          beginner-friendly sessions to advanced masterclasses, there's
+          something for everyone.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Filters Section -->
+  <section class="py-8 bg-white border-b border-secondary/30">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-wrap gap-4 items-center justify-between">
+        <div class="flex flex-wrap gap-4">
+          <!-- Category Filter -->
+          <div class="relative">
+            <select
+              id="category-filter"
+              class="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            >
+              {
+                categories.map((category) => (
+                  <option value={category.value}>{category.label}</option>
+                ))
+              }
+            </select>
+            <div
+              class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none"
+            >
+              <svg
+                class="w-4 h-4 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Level Filter -->
+          <div class="relative">
+            <select
+              id="level-filter"
+              class="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            >
+              {
+                levels.map((level) => (
+                  <option value={level.value}>{level.label}</option>
+                ))
+              }
+            </select>
+            <div
+              class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none"
+            >
+              <svg
+                class="w-4 h-4 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search -->
+        <div class="relative flex-1 max-w-md">
+          <input
+            type="text"
+            id="search-input"
+            placeholder="Search events..."
+            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+          />
+          <div
+            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+          >
+            <svg
+              class="w-5 h-5 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Events Grid -->
+  <section class="py-20 bg-white">
+    <div class="container mx-auto px-4">
+      <div id="events-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {
+          processedEvents.map((event) => (
+            <div
+              class="bg-white rounded-2xl shadow-lg overflow-hidden card-hover event-card"
+              data-category={event.category}
+              data-level={event.level}
+              data-title={event.title.toLowerCase()}
+              data-description={event.description.toLowerCase()}
+            >
+              <div class="h-48 bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center relative">
+                <span class="text-4xl">{event.categoryIcon}</span>
+                <div class="absolute top-4 right-4">
+                  <span
+                    class={`px-3 py-1 rounded-full text-xs font-semibold ${event.levelBadgeClass}`}
+                  >
+                    {event.levelText}
+                  </span>
+                </div>
+              </div>
+
+              <div class="p-6">
+                <h3 class="font-display font-semibold text-xl mb-3">
+                  {event.title}
+                </h3>
+
+                <div class="space-y-2 mb-4 text-sm text-dark/70">
+                  <div class="flex items-center">
+                    <span class="mr-2">📅</span>
+                    <span>
+                      {new Date(event.date).toLocaleDateString("en-IN", {
+                        weekday: "long",
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </span>
+                  </div>
+                  <div class="flex items-center">
+                    <span class="mr-2">⏰</span>
+                    <span>
+                      {event.time} ({event.duration})
+                    </span>
+                  </div>
+                  <div class="flex items-center">
+                    <span class="mr-2">📍</span>
+                    <span>{event.venue}</span>
+                  </div>
+                  <div class="flex items-center">
+                    <span class="mr-2">👥</span>
+                    <span>{event.spotsText}</span>
+                  </div>
+                </div>
+
+                <p class="text-dark/80 mb-6 line-clamp-3">
+                  {event.description}
+                </p>
+
+                <div class="flex items-center justify-between">
+                  <span class="text-2xl font-bold text-primary">
+                    {event.price}
+                  </span>
+                  <div class="flex items-center gap-2">
+                    <a
+                      href={`/events/${createFullSlug(event.id, event.title)}`}
+                      class="text-primary hover:text-accent transition-colors font-medium"
+                    >
+                      Details
+                    </a>
+                    {!event.isSoldOut && (
+                      <a
+                        href={URLS.REGISTRATION_FORM}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class={`px-6 py-2 rounded-full font-medium transition-colors ${event.buttonClass}`}
+                      >
+                        {event.buttonText}
+                      </a>
+                    )}
+                    {event.isSoldOut && (
+                      <span class="px-6 py-2 rounded-full bg-gray-300 text-gray-600 font-medium cursor-not-allowed">
+                        Sold Out
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <!-- No Results Message -->
+      <div id="no-results" class="hidden text-center py-20">
+        <div class="text-6xl mb-4">🔍</div>
+        <h3 class="font-display text-2xl font-semibold mb-2">
+          No events found
+        </h3>
+        <p class="text-dark/70">Try adjusting your filters or search terms.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter Section -->
+  <section class="py-20 gradient-bg">
+    <div class="container mx-auto px-4 text-center">
+      <h2 class="font-display text-3xl md:text-4xl font-bold mb-6">
+        Never Miss an <span class="gradient-text">Event</span>
+      </h2>
+      <p class="text-xl text-dark/80 mb-8 max-w-2xl mx-auto">
+        Subscribe to our newsletter to get notified about new workshops,
+        performances, and special events.
+      </p>
+      <form class="max-w-md mx-auto flex gap-4">
+        <input
+          type="email"
+          placeholder="Enter your email"
+          class="flex-1 px-4 py-3 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+          required
+        />
+        <button
+          type="submit"
+          class="bg-primary text-white px-8 py-3 rounded-full hover:bg-accent transition-colors font-medium whitespace-nowrap"
+        >
+          Subscribe
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <script>
+    // Filter and search functionality
+    document.addEventListener("DOMContentLoaded", function () {
+      const categoryFilter = document.getElementById(
+        "category-filter",
+      ) as HTMLSelectElement;
+      const levelFilter = document.getElementById(
+        "level-filter",
+      ) as HTMLSelectElement;
+      const searchInput = document.getElementById(
+        "search-input",
+      ) as HTMLInputElement;
+      const eventsGrid = document.getElementById(
+        "events-grid",
+      ) as HTMLDivElement;
+      const noResults = document.getElementById("no-results") as HTMLDivElement;
+
+      if (
+        !categoryFilter ||
+        !levelFilter ||
+        !searchInput ||
+        !eventsGrid ||
+        !noResults
+      ) {
+        console.error("DOMContentLoaded: Required elements not found");
+        return;
+      }
+
+      function filterEvents() {
+        if (
+          !categoryFilter ||
+          !levelFilter ||
+          !searchInput ||
+          !eventsGrid ||
+          !noResults
+        ) {
+          console.error("filterEvents: Required elements not found");
+          return;
+        }
+        const categoryValue = categoryFilter.value;
+        const levelValue = levelFilter.value;
+        const searchValue = searchInput.value.toLowerCase();
+
+        const eventCards = document.querySelectorAll(
+          ".event-card",
+        ) as NodeListOf<HTMLDivElement>;
+        let visibleCount = 0;
+
+        eventCards.forEach((card) => {
+          const cardCategory = card.dataset.category;
+          const cardLevel = card.dataset.level;
+          const cardTitle = card.dataset.title;
+          const cardDescription = card.dataset.description;
+
+          const categoryMatch =
+            categoryValue === "all" || cardCategory === categoryValue;
+          const levelMatch =
+            levelValue === "all" ||
+            cardLevel === levelValue ||
+            cardLevel === "all";
+          const searchMatch =
+            searchValue === "" ||
+            cardTitle?.includes(searchValue) ||
+            cardDescription?.includes(searchValue);
+
+          if (categoryMatch && levelMatch && searchMatch) {
+            card.style.display = "block";
+            visibleCount++;
+          } else {
+            card.style.display = "none";
+          }
+        });
+
+        // Show/hide no results message
+        if (visibleCount === 0) {
+          eventsGrid.style.display = "none";
+          noResults.classList.remove("hidden");
+        } else {
+          eventsGrid.style.display = "grid";
+          noResults.classList.add("hidden");
+        }
+      }
+
+      // Add event listeners
+      categoryFilter.addEventListener("change", filterEvents);
+      levelFilter.addEventListener("change", filterEvents);
+      searchInput.addEventListener("input", filterEvents);
+
+      // Newsletter form submission
+      const newsletterForm = document.querySelector("form");
+      newsletterForm?.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const emailInput = this.querySelector(
+          'input[type="email"]',
+        ) as HTMLInputElement;
+        if (!emailInput) {
+          console.error("submit: Email input not found");
+          return;
+        }
+        const email = emailInput.value;
+        alert(`Thank you for subscribing with email: ${email}`);
+        this.reset();
+      });
+    });
+  </script>
+
+  <style>
+    .line-clamp-3 {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  </style>
+</BaseLayout>
+
+

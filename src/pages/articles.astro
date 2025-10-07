@@ -1,0 +1,528 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { createFullSlug } from '../utils/slug.js';
+
+// Sample articles data - in a real app, this would come from a CMS or API
+const allArticles = [
+  {
+    id: 1,
+    title: "The Art of 'Yes, And': Building on Ideas in Improv",
+    excerpt: "Learn the fundamental principle of improv comedy and how it can transform your creative collaborations both on and off stage.",
+    content: "The golden rule of improv...",
+    author: "Priya Sharma",
+    date: "2024-10-15",
+    readTime: "5 min read",
+    category: "technique",
+    tags: ["basics", "collaboration", "yes-and"],
+    featured: true,
+    image: "/images/yes-and-article.jpg"
+  },
+  {
+    id: 2,
+    title: "From Stage Fright to Spotlight: Overcoming Performance Anxiety",
+    excerpt: "Practical tips and techniques to help you conquer your fears and embrace the joy of performing in front of an audience.",
+    content: "Stage fright is natural...",
+    author: "Arjun Menon",
+    date: "2024-10-10",
+    readTime: "7 min read",
+    category: "personal-growth",
+    tags: ["confidence", "anxiety", "performance"],
+    featured: false,
+    image: "/images/stage-fright-article.jpg"
+  },
+  {
+    id: 3,
+    title: "Building Characters: Creating Memorable Personas in Improv",
+    excerpt: "Discover techniques for developing rich, consistent characters that bring depth and humor to your improv scenes.",
+    content: "Character development in improv...",
+    author: "Sneha Patel",
+    date: "2024-10-05",
+    readTime: "6 min read",
+    category: "technique",
+    tags: ["character", "development", "acting"],
+    featured: true,
+    image: "/images/character-building.jpg"
+  },
+  {
+    id: 4,
+    title: "The Business Benefits of Improv: Skills for the Workplace",
+    excerpt: "How improv comedy training can enhance your professional skills, from leadership to creative problem-solving.",
+    content: "Corporate improv training...",
+    author: "Rajesh Kumar",
+    date: "2024-09-28",
+    readTime: "8 min read",
+    category: "business",
+    tags: ["corporate", "leadership", "skills"],
+    featured: false,
+    image: "/images/business-improv.jpg"
+  },
+  {
+    id: 5,
+    title: "Long-form vs Short-form: Understanding Improv Formats",
+    excerpt: "Explore the differences between various improv formats and find the style that resonates with your creative vision.",
+    content: "Improv comes in many forms...",
+    author: "Maya Iyer",
+    date: "2024-09-20",
+    readTime: "4 min read",
+    category: "technique",
+    tags: ["formats", "longform", "shortform"],
+    featured: false,
+    image: "/images/improv-formats.jpg"
+  },
+  {
+    id: 6,
+    title: "Creating Safe Spaces: The Importance of Trust in Improv",
+    excerpt: "Why psychological safety is crucial for great improv and how to foster an environment where creativity can flourish.",
+    content: "Trust is the foundation...",
+    author: "Deepak Nair",
+    date: "2024-09-15",
+    readTime: "6 min read",
+    category: "community",
+    tags: ["safety", "trust", "community"],
+    featured: true,
+    image: "/images/safe-spaces.jpg"
+  },
+  {
+    id: 7,
+    title: "Improv Games for Beginners: Start Your Journey Here",
+    excerpt: "A comprehensive guide to essential improv games and exercises perfect for newcomers to the art form.",
+    content: "Starting your improv journey...",
+    author: "Kavitha Reddy",
+    date: "2024-09-08",
+    readTime: "10 min read",
+    category: "beginner",
+    tags: ["games", "exercises", "beginners"],
+    featured: false,
+    image: "/images/improv-games.jpg"
+  },
+  {
+    id: 8,
+    title: "The History of Improv Comedy in India",
+    excerpt: "Trace the evolution of improvisational comedy in India and discover how it has grown into a vibrant art form.",
+    content: "Improv comedy in India...",
+    author: "Vikram Joshi",
+    date: "2024-08-30",
+    readTime: "12 min read",
+    category: "history",
+    tags: ["history", "india", "evolution"],
+    featured: false,
+    image: "/images/improv-history.jpg"
+  }
+];
+
+const categories = [
+  { value: 'all', label: 'All Articles' },
+  { value: 'technique', label: 'Technique' },
+  { value: 'personal-growth', label: 'Personal Growth' },
+  { value: 'business', label: 'Business' },
+  { value: 'community', label: 'Community' },
+  { value: 'beginner', label: 'Beginner' },
+  { value: 'history', label: 'History' }
+];
+
+const featuredArticles = allArticles.filter(article => article.featured);
+// const regularArticles = allArticles.filter(article => !article.featured);
+---
+
+<BaseLayout 
+  title="Articles - H.E.A.R.T. Beat Improv"
+  description="Explore our collection of articles on improv comedy techniques, personal growth, and community insights. Learn from experienced improvisers and grow your skills."
+>
+  <!-- Hero Section -->
+  <section class="py-20 gradient-bg">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-12">
+        <h1 class="font-display text-4xl md:text-6xl font-bold mb-6">
+          <span class="gradient-text">Articles & Insights</span>
+        </h1>
+        <p class="text-xl text-dark/80 max-w-3xl mx-auto">
+          Dive deep into the world of improv comedy with our collection of articles, tips, and insights 
+          from experienced performers and instructors.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Articles -->
+  {featuredArticles.length > 0 && (
+    <section class="py-20 bg-white">
+      <div class="container mx-auto px-4">
+        <h2 class="font-display text-3xl md:text-4xl font-bold mb-12 text-center">
+          <span class="gradient-text">Featured Articles</span>
+        </h2>
+        
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+          {featuredArticles.map((article) => (
+            <article class="bg-white rounded-2xl shadow-lg overflow-hidden card-hover">
+              <div class="h-48 bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center relative">
+                <span class="text-4xl">
+                  {article.category === 'technique' ? '🎯' : 
+                   article.category === 'personal-growth' ? '🌱' : 
+                   article.category === 'business' ? '💼' : 
+                   article.category === 'community' ? '🤝' : 
+                   article.category === 'beginner' ? '🌟' : 
+                   article.category === 'history' ? '📚' : '📝'}
+                </span>
+                <div class="absolute top-4 left-4">
+                  <span class="bg-primary text-white px-3 py-1 rounded-full text-xs font-semibold">
+                    Featured
+                  </span>
+                </div>
+              </div>
+              
+              <div class="p-6">
+                <div class="flex items-center text-sm text-dark/60 mb-3">
+                  <span class="bg-secondary text-primary px-2 py-1 rounded text-xs font-medium mr-3">
+                    {categories.find(cat => cat.value === article.category)?.label}
+                  </span>
+                  <span>{article.readTime}</span>
+                </div>
+                
+                <h3 class="font-display font-semibold text-xl mb-3 line-clamp-2">
+                  <a href={`/articles/${createFullSlug(article.id, article.title)}`} class="hover:text-primary transition-colors">
+                    {article.title}
+                  </a>
+                </h3>
+                
+                <p class="text-dark/80 mb-4 line-clamp-3">{article.excerpt}</p>
+                
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center text-sm text-dark/60">
+                    <div class="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center mr-2">
+                      <span class="text-white text-xs font-bold">{article.author.charAt(0)}</span>
+                    </div>
+                    <div>
+                      <div class="font-medium">{article.author}</div>
+                      <div class="text-xs">{new Date(article.date).toLocaleDateString('en-IN', { 
+                        year: 'numeric', month: 'short', day: 'numeric' 
+                      })}</div>
+                    </div>
+                  </div>
+                  <a href={`/articles/${createFullSlug(article.id, article.title)}`} 
+                     class="text-primary hover:text-accent transition-colors font-medium">
+                    Read More →
+                  </a>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Filters Section -->
+  <section class="py-8 bg-gray-50 border-y border-secondary/30">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-wrap gap-4 items-center justify-between">
+        <div class="flex flex-wrap gap-4">
+          <!-- Category Filter -->
+          <div class="relative">
+            <select id="category-filter" class="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+              {categories.map(category => (
+                <option value={category.value}>{category.label}</option>
+              ))}
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Sort Filter -->
+          <div class="relative">
+            <select id="sort-filter" class="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+              <option value="title">Title A-Z</option>
+              <option value="read-time">Read Time</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search -->
+        <div class="relative flex-1 max-w-md">
+          <input 
+            type="text" 
+            id="search-input" 
+            placeholder="Search articles..." 
+            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+          />
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- All Articles -->
+  <section class="py-20 bg-white">
+    <div class="container mx-auto px-4">
+      <h2 class="font-display text-3xl md:text-4xl font-bold mb-12 text-center">
+        All <span class="gradient-text">Articles</span>
+      </h2>
+      
+      <div id="articles-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {allArticles.map((article) => (
+          <article class="bg-white rounded-2xl shadow-lg overflow-hidden card-hover article-card" 
+                   data-category={article.category}
+                   data-title={article.title.toLowerCase()}
+                   data-excerpt={article.excerpt.toLowerCase()}
+                   data-author={article.author.toLowerCase()}
+                   data-date={article.date}
+                   data-read-time={parseInt(article.readTime)}>
+            <div class="h-48 bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center relative">
+              <span class="text-4xl">
+                {article.category === 'technique' ? '🎯' : 
+                 article.category === 'personal-growth' ? '🌱' : 
+                 article.category === 'business' ? '💼' : 
+                 article.category === 'community' ? '🤝' : 
+                 article.category === 'beginner' ? '🌟' : 
+                 article.category === 'history' ? '📚' : '📝'}
+              </span>
+              {article.featured && (
+                <div class="absolute top-4 left-4">
+                  <span class="bg-primary text-white px-3 py-1 rounded-full text-xs font-semibold">
+                    Featured
+                  </span>
+                </div>
+              )}
+            </div>
+            
+            <div class="p-6">
+              <div class="flex items-center text-sm text-dark/60 mb-3">
+                <span class="bg-secondary text-primary px-2 py-1 rounded text-xs font-medium mr-3">
+                  {categories.find(cat => cat.value === article.category)?.label}
+                </span>
+                <span>{article.readTime}</span>
+              </div>
+              
+              <h3 class="font-display font-semibold text-xl mb-3 line-clamp-2">
+                <a href={`/articles/${createFullSlug(article.id, article.title)}`} class="hover:text-primary transition-colors">
+                  {article.title}
+                </a>
+              </h3>
+              
+              <p class="text-dark/80 mb-4 line-clamp-3">{article.excerpt}</p>
+              
+              <div class="flex flex-wrap gap-2 mb-4">
+                {article.tags.slice(0, 3).map(tag => (
+                  <span class="bg-gray-100 text-dark/70 px-2 py-1 rounded text-xs">
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+              
+              <div class="flex items-center justify-between">
+                <div class="flex items-center text-sm text-dark/60">
+                  <div class="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center mr-2">
+                    <span class="text-white text-xs font-bold">{article.author.charAt(0)}</span>
+                  </div>
+                  <div>
+                    <div class="font-medium">{article.author}</div>
+                    <div class="text-xs">{new Date(article.date).toLocaleDateString('en-IN', { 
+                      year: 'numeric', month: 'short', day: 'numeric' 
+                    })}</div>
+                  </div>
+                </div>
+                <a href={`/articles/${createFullSlug(article.id, article.title)}`} 
+                   class="text-primary hover:text-accent transition-colors font-medium">
+                  Read More →
+                </a>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+      
+      <!-- No Results Message -->
+      <div id="no-results" class="hidden text-center py-20">
+        <div class="text-6xl mb-4">📝</div>
+        <h3 class="font-display text-2xl font-semibold mb-2">No articles found</h3>
+        <p class="text-dark/70">Try adjusting your filters or search terms.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter Section -->
+  <section class="py-20 gradient-bg">
+    <div class="container mx-auto px-4 text-center">
+      <h2 class="font-display text-3xl md:text-4xl font-bold mb-6">
+        Stay <span class="gradient-text">Informed</span>
+      </h2>
+      <p class="text-xl text-dark/80 mb-8 max-w-2xl mx-auto">
+        Get our latest articles, tips, and insights delivered straight to your inbox.
+      </p>
+      <form class="max-w-md mx-auto flex gap-4">
+        <input 
+          type="email" 
+          placeholder="Enter your email" 
+          class="flex-1 px-4 py-3 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+          required
+        />
+        <button 
+          type="submit" 
+          class="bg-primary text-white px-8 py-3 rounded-full hover:bg-accent transition-colors font-medium whitespace-nowrap">
+          Subscribe
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <script>
+    // Filter, sort, and search functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const categoryFilter = document.getElementById('category-filter') as HTMLSelectElement;
+      const sortFilter = document.getElementById('sort-filter') as HTMLSelectElement;
+      const searchInput = document.getElementById('search-input') as HTMLInputElement;
+      const articlesGrid = document.getElementById('articles-grid') as HTMLDivElement;
+      const noResults = document.getElementById('no-results') as HTMLDivElement;
+
+      if (
+        !categoryFilter ||
+        !sortFilter ||
+        !searchInput ||
+        !articlesGrid ||
+        !noResults
+      ) {
+        console.error("DOMContentLoaded: Required elements not found");
+        return;
+      }
+      
+      function filterAndSortArticles() {
+        if (
+          !categoryFilter ||
+          !sortFilter ||
+          !searchInput ||
+          !articlesGrid ||
+          !noResults
+        ) {
+          console.error("filterAndSortArticles: Required elements not found");
+          return;
+        }
+        const categoryValue = categoryFilter.value;
+        const sortValue = sortFilter.value;
+        const searchValue = searchInput.value.toLowerCase();
+        
+        const articleCards = Array.from(document.querySelectorAll('.article-card')) as HTMLElement[];
+        let visibleCards: HTMLElement[] = [];
+        
+        // Filter articles
+        articleCards.forEach(card => {
+          const cardCategory = card.dataset.category;
+          const cardTitle = card.dataset.title;
+          const cardExcerpt = card.dataset.excerpt;
+          const cardAuthor = card.dataset.author;
+          
+          const categoryMatch = categoryValue === 'all' || cardCategory === categoryValue;
+          const searchMatch = searchValue === '' || 
+                             cardTitle?.includes(searchValue) || 
+                             cardExcerpt?.includes(searchValue) ||
+                             cardAuthor?.includes(searchValue);
+          
+          if (categoryMatch && searchMatch) {
+            card.style.display = 'block';
+            visibleCards.push(card);
+          } else {
+            card.style.display = 'none';
+          }
+        });
+        
+        // Sort visible articles
+        visibleCards.sort((a, b) => {
+          // Type assertions to HTMLElement for dataset access
+          const aEl = a as HTMLElement;
+          const bEl = b as HTMLElement;
+          switch (sortValue) {
+            case 'newest': {
+              const dateA = aEl.dataset.date ? new Date(aEl.dataset.date).getTime() : 0;
+              const dateB = bEl.dataset.date ? new Date(bEl.dataset.date).getTime() : 0;
+              return dateB - dateA;
+            }
+            case 'oldest': {
+              const dateA = aEl.dataset.date ? new Date(aEl.dataset.date).getTime() : 0;
+              const dateB = bEl.dataset.date ? new Date(bEl.dataset.date).getTime() : 0;
+              return dateA - dateB;
+            }
+            case 'title': {
+              const titleA = aEl.dataset.title || '';
+              const titleB = bEl.dataset.title || '';
+              return titleA.localeCompare(titleB);
+            }
+            case 'read-time': {
+              // Expecting readTime in format like "5 min read"
+              const getReadTime = (el: HTMLElement) => {
+                const val = el.dataset.readTime || '';
+                const match = val.match(/^(\d+)/);
+                return match ? parseInt(match[1], 10) : 0;
+              };
+              return getReadTime(aEl) - getReadTime(bEl);
+            }
+            default:
+              return 0;
+          }
+        });
+        
+        // Reorder DOM elements
+        visibleCards.forEach(card => {
+          articlesGrid.appendChild(card);
+        });
+        
+        // Show/hide no results message
+        if (visibleCards.length === 0) {
+          articlesGrid.style.display = 'none';
+          noResults.classList.remove('hidden');
+        } else {
+          articlesGrid.style.display = 'grid';
+          noResults.classList.add('hidden');
+        }
+      }
+      
+      // Add event listeners
+      categoryFilter.addEventListener('change', filterAndSortArticles);
+      sortFilter.addEventListener('change', filterAndSortArticles);
+      searchInput.addEventListener('input', filterAndSortArticles);
+      
+      // Newsletter form submission
+      const newsletterForm = document.querySelector('form');
+      newsletterForm?.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const emailInput = this.querySelector('input[type="email"]') as HTMLInputElement;
+        if (!emailInput) {
+          console.error("submit: Email input not found");
+          return;
+        }
+        const email = emailInput.value;
+        alert(`Thank you for subscribing with email: ${email}`);
+        this.reset();
+      });
+    });
+  </script>
+
+  <style>
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .line-clamp-3 {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  </style>
+</BaseLayout>
+
+
