@@ -1,24 +1,22 @@
 ---
-import { createFullSlug, extractIdFromSlug } from '../../utils/slug.js';
-import { URLS } from '../../constants.js';
-import { allEvents } from '../../content/events/all-events.js';
+import { createFullSlug, extractIdFromSlug } from "../../utils/slug.js";
+import { URLS } from "../../constants.js";
+import { allEvents, regularEvents } from "../../content/events/all-events.js";
 
 export async function getStaticPaths() {
-  return allEvents.map((event) => ({
+  return [...allEvents, ...regularEvents].map((event) => ({
     params: { slug: createFullSlug(event.id, event.title) },
     props: { event },
   }));
 }
 
 const { event } = Astro.props;
-const spotsLeft = event.spots - event.booked;
-const isAlmostFull = spotsLeft <= 5;
-const isSoldOut = spotsLeft <= 0;
+const capacity = event.spots ?? 0;
 
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import BaseLayout from "../../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout 
+<BaseLayout
   title={`${event.title} - H.E.A.R.T. Beat Improv`}
   description={event.description}
   image={event.image}
@@ -31,39 +29,60 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         <div class="flex flex-col lg:flex-row gap-8 items-start">
           <div class="flex-1">
             <div class="flex items-center gap-4 mb-4">
-              <span class={`px-3 py-1 rounded-full text-sm font-semibold ${
-                event.level === 'beginner' ? 'bg-green-100 text-green-800' :
-                event.level === 'intermediate' ? 'bg-yellow-100 text-yellow-800' :
-                event.level === 'advanced' ? 'bg-red-100 text-red-800' :
-                'bg-blue-100 text-blue-800'
-              }`}>
-                {event.level === 'all' ? 'All Levels' : event.level.charAt(0).toUpperCase() + event.level.slice(1)}
+              <span
+                class={`px-3 py-1 rounded-full text-sm font-semibold ${
+                  event.level === "beginner"
+                    ? "bg-green-100 text-green-800"
+                    : event.level === "intermediate"
+                      ? "bg-yellow-100 text-yellow-800"
+                      : event.level === "advanced"
+                        ? "bg-red-100 text-red-800"
+                        : "bg-blue-100 text-blue-800"
+                }`}
+              >
+                {
+                  event.level === "all"
+                    ? "All Levels"
+                    : event.level.charAt(0).toUpperCase() + event.level.slice(1)
+                }
               </span>
-              <span class="px-3 py-1 rounded-full text-sm font-semibold bg-primary/20 text-primary">
-                {event.category.charAt(0).toUpperCase() + event.category.slice(1)}
+              <span
+                class="px-3 py-1 rounded-full text-sm font-semibold bg-primary/20 text-primary"
+              >
+                {
+                  event.category.charAt(0).toUpperCase() +
+                    event.category.slice(1)
+                }
               </span>
             </div>
-            
+
             <h1 class="font-display text-4xl md:text-5xl font-bold mb-6">
               {event.title}
             </h1>
-            
+
             <p class="text-xl text-dark/80 mb-8 leading-relaxed">
               {event.description}
             </p>
-            
+
             <div class="grid md:grid-cols-2 gap-6 mb-8">
               <div class="space-y-4">
                 <div class="flex items-center">
                   <span class="text-primary mr-3 text-xl">📅</span>
                   <div>
-                    <div class="font-semibold">{new Date(event.date).toLocaleDateString('en-IN', { 
-                      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
-                    })}</div>
+                    <div class="font-semibold">
+                      {
+                        new Date(event.date).toLocaleDateString("en-IN", {
+                          weekday: "long",
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })
+                      }
+                    </div>
                     <div class="text-dark/70">{event.time}</div>
                   </div>
                 </div>
-                
+
                 <div class="flex items-center">
                   <span class="text-primary mr-3 text-xl">⏰</span>
                   <div>
@@ -71,7 +90,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
                     <div class="text-dark/70">{event.duration}</div>
                   </div>
                 </div>
-                
+
                 <div class="flex items-center">
                   <span class="text-primary mr-3 text-xl">📍</span>
                   <div>
@@ -80,77 +99,79 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
                   </div>
                 </div>
               </div>
-              
+
               <div class="space-y-4">
                 <div class="flex items-center">
                   <span class="text-primary mr-3 text-xl">💰</span>
                   <div>
                     <div class="font-semibold">Price</div>
-                    <div class="text-2xl font-bold text-primary">{event.price}</div>
+                    <div class="text-2xl font-bold text-primary">
+                      {event.price}
+                    </div>
                   </div>
                 </div>
-                
+
                 <div class="flex items-center">
                   <span class="text-primary mr-3 text-xl">👥</span>
                   <div>
                     <div class="font-semibold">Availability</div>
-                    <div class={`font-medium ${isSoldOut ? 'text-red-600' : isAlmostFull ? 'text-orange-600' : 'text-green-600'}`}>
-                      {isSoldOut ? 'Sold Out' : 
-                       isAlmostFull ? `Only ${spotsLeft} spots left!` : 
-                       `${spotsLeft} spots available`}
+                    <div class="font-medium text-green-600">
+                      {capacity} seats
                     </div>
                   </div>
                 </div>
-                
-                {event.instructor && (
-                  <div class="flex items-center">
-                    <span class="text-primary mr-3 text-xl">👨‍🏫</span>
-                    <div>
-                      <div class="font-semibold">Instructor</div>
-                      <div class="text-dark/70">{event.instructor}</div>
+
+                {
+                  event.instructor && (
+                    <div class="flex items-center">
+                      <span class="text-primary mr-3 text-xl">👨‍🏫</span>
+                      <div>
+                        <div class="font-semibold">Instructor</div>
+                        <div class="text-dark/70">{event.instructor}</div>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )
+                }
               </div>
             </div>
           </div>
-          
+
           <div class="lg:w-96">
             <div class="bg-white rounded-2xl shadow-lg p-6 sticky top-24">
-              <div class="h-48 bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl flex items-center justify-center mb-6">
+              <div
+                class="h-48 bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl flex items-center justify-center mb-6"
+              >
                 <span class="text-6xl">
-                  {event.category === 'workshop' ? '🎪' : 
-                   event.category === 'performance' ? '🎭' : 
-                   event.category === 'corporate' ? '💼' : '🎨'}
+                  {
+                    event.category === "workshop"
+                      ? "🎪"
+                      : event.category === "performance"
+                        ? "🎭"
+                        : event.category === "corporate"
+                          ? "💼"
+                          : "🎨"
+                  }
                 </span>
               </div>
-              
+
               <div class="text-center mb-6">
-                <div class="text-3xl font-bold text-primary mb-2">{event.price}</div>
-                <div class={`text-sm font-medium ${isSoldOut ? 'text-red-600' : isAlmostFull ? 'text-orange-600' : 'text-green-600'}`}>
-                  {isSoldOut ? 'Event is sold out' : 
-                   isAlmostFull ? `Hurry! Only ${spotsLeft} spots left` : 
-                   `${spotsLeft} spots available`}
+                <div class="text-3xl font-bold text-primary mb-2">
+                  {event.price}
+                </div>
+                <div class="text-sm font-medium text-green-600">
+                  {capacity} seats
                 </div>
               </div>
-              
-              {!isSoldOut && (
-                <a href={URLS.REGISTRATION_FORM} target="_blank" rel="noopener noreferrer"
-                   class={`block w-full text-center py-4 rounded-full font-semibold transition-all duration-300 hover:scale-105 ${
-                     isAlmostFull 
-                       ? 'bg-orange-500 text-white hover:bg-orange-600' 
-                       : 'bg-primary text-white hover:bg-accent'
-                   }`}>
-                  {isAlmostFull ? 'Book Now!' : 'Register Now'}
-                </a>
-              )}
-              
-              {isSoldOut && (
-                <button class="block w-full text-center py-4 rounded-full bg-gray-300 text-gray-600 font-semibold cursor-not-allowed">
-                  Sold Out
-                </button>
-              )}
-              
+
+              <a
+                href={URLS.REGISTRATION_FORM}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="block w-full text-center py-4 rounded-full font-semibold transition-all duration-300 hover:scale-105 bg-primary text-white hover:bg-accent"
+              >
+                Register Now
+              </a>
+
               <div class="mt-4 text-center text-sm text-dark/60">
                 <p>Secure payment • Instant confirmation</p>
               </div>
@@ -166,23 +187,29 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     <div class="container mx-auto px-4">
       <div class="max-w-4xl mx-auto">
         <div class="prose prose-lg max-w-none">
-          <div set:html={event.fullDescription}></div>
+          <div set:html={event.fullDescription} />
         </div>
-        
-        {event.instructorBio && (
-          <div class="mt-12 bg-gradient-to-br from-primary/5 to-accent/5 rounded-2xl p-8">
-            <h3 class="font-display text-2xl font-semibold mb-4">About Your Instructor</h3>
-            <div class="flex items-start gap-4">
-              <div class="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center flex-shrink-0">
-                <span class="text-white font-bold text-xl">{event.instructor.charAt(0)}</span>
-              </div>
-              <div>
-                <h4 class="font-semibold text-xl mb-2">{event.instructor}</h4>
-                <p class="text-dark/80">{event.instructorBio}</p>
+
+        {
+          event.instructorBio && (
+            <div class="mt-12 bg-gradient-to-br from-primary/5 to-accent/5 rounded-2xl p-8">
+              <h3 class="font-display text-2xl font-semibold mb-4">
+                About Your Instructor
+              </h3>
+              <div class="flex items-start gap-4">
+                <div class="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center flex-shrink-0">
+                  <span class="text-white font-bold text-xl">
+                    {event.instructor.charAt(0)}
+                  </span>
+                </div>
+                <div>
+                  <h4 class="font-semibold text-xl mb-2">{event.instructor}</h4>
+                  <p class="text-dark/80">{event.instructorBio}</p>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )
+        }
       </div>
     </div>
   </section>
@@ -198,10 +225,12 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
           Discover other exciting events and workshops
         </p>
       </div>
-      
+
       <div class="text-center">
-        <a href="/events" 
-           class="inline-block bg-primary text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-accent transition-all duration-300 hover:scale-105">
+        <a
+          href="/events"
+          class="inline-block bg-primary text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-accent transition-all duration-300 hover:scale-105"
+        >
           View All Events
         </a>
       </div>
@@ -212,19 +241,17 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     .prose h3 {
       @apply font-display text-xl font-semibold mt-8 mb-4 text-dark;
     }
-    
+
     .prose ul {
       @apply space-y-2 mb-6;
     }
-    
+
     .prose li {
       @apply text-dark/80;
     }
-    
+
     .prose p {
       @apply text-dark/80 mb-4 leading-relaxed;
     }
   </style>
 </BaseLayout>
-
-

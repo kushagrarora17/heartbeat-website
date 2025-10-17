@@ -2,7 +2,10 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { createFullSlug } from "../utils/slug.js";
 import { URLS } from "../constants.js";
-import { allEvents as events } from '../content/events/all-events.js';
+import {
+  allEvents as events,
+  regularEvents,
+} from "../content/events/all-events.js";
 
 // Sample events data - in a real app, this would come from a CMS or API
 const allEvents = events.map((event) => ({
@@ -21,7 +24,6 @@ const allEvents = events.map((event) => ({
   level: event.level,
   duration: event.duration,
   spots: event.spots,
-  booked: event.booked,
   image: event.image,
 }));
 
@@ -39,17 +41,13 @@ const levels = [
   { value: "advanced", label: "Advanced" },
 ];
 
-// Process events data for display
+// Process events data for display (simplified — no booked/remaining logic)
 const processedEvents = allEvents.map((event) => {
-  const spotsLeft = event.spots - event.booked;
-  const isAlmostFull = spotsLeft < 6;
-  const isSoldOut = spotsLeft < 1;
+  const capacity = event.spots ?? 0;
 
   return {
     ...event,
-    spotsLeft,
-    isAlmostFull,
-    isSoldOut,
+    capacity,
     levelBadgeClass:
       event.level === "beginner"
         ? "bg-green-100 text-green-800"
@@ -70,15 +68,44 @@ const processedEvents = allEvents.map((event) => {
           : event.category === "corporate"
             ? "💼"
             : "🎨",
-    spotsText: isSoldOut
-      ? "Sold Out"
-      : isAlmostFull
-        ? `Only ${spotsLeft} spots left!`
-        : `${spotsLeft} spots available`,
-    buttonClass: isAlmostFull
-      ? "bg-orange-500 text-white hover:bg-orange-600"
-      : "bg-primary text-white hover:bg-accent",
-    buttonText: isAlmostFull ? "Book Now!" : "Register",
+    // simplified: show capacity instead of remaining/booked logic
+    capacityText: `${capacity} seats`,
+    buttonClass: "bg-primary text-white hover:bg-accent",
+    buttonText: "Register",
+  };
+});
+
+// New: Process weekly (regular) events to render in the top "Weekly Events" section (no booked logic)
+const processedWeeklyEvents = (regularEvents || []).map((event) => {
+  const capacity = event.spots ?? 0;
+
+  return {
+    ...event,
+    capacity,
+    levelBadgeClass:
+      event.level === "beginner"
+        ? "bg-green-100 text-green-800"
+        : event.level === "intermediate"
+          ? "bg-yellow-100 text-yellow-800"
+          : event.level === "advanced"
+            ? "bg-red-100 text-red-800"
+            : "bg-blue-100 text-blue-800",
+    levelText:
+      event.level === "all"
+        ? "All Levels"
+        : (event.level || "").charAt(0).toUpperCase() +
+          (event.level || "").slice(1),
+    categoryIcon:
+      event.category === "workshop"
+        ? "🎪"
+        : event.category === "performance"
+          ? "🎭"
+          : event.category === "corporate"
+            ? "💼"
+            : "🎨",
+    capacityText: `${capacity} seats`,
+    buttonClass: "bg-primary text-white hover:bg-accent",
+    buttonText: "Drop-in",
   };
 });
 ---
@@ -87,6 +114,77 @@ const processedEvents = allEvents.map((event) => {
   title="Events - H.E.A.R.T. Beat Improv"
   description="Discover upcoming improv comedy workshops, performances, and events in Bangalore. Join H.E.A.R.T. Beat Improv for an unforgettable experience."
 >
+  <!-- Weekly Events (new, top) -->
+  <section
+    class="py-12 bg-gradient-to-r from-primary/5 to-accent/5 border-b border-secondary/20"
+  >
+    <div class="container mx-auto px-4">
+      <div class="flex items-start justify-between gap-6 mb-8">
+        <div class="container mx-auto px-4">
+          <div class="text-center mb-12">
+            <h1 class="font-display text-4xl md:text-6xl font-bold mb-6">
+              <span class="gradient-text">Weekly Events</span>
+            </h1>
+            <p class="text-xl text-dark/80 max-w-3xl mx-auto">
+              Time-tested weekly sessions that make trying improv easy — no
+              commitment required. Drop in, play, and meet the community.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {
+          processedWeeklyEvents.map((event) => (
+            <div class="bg-white rounded-xl shadow-md p-5 flex items-start gap-4 weekly-card">
+              <div class="text-4xl">{event.categoryIcon}</div>
+              <div class="flex-1">
+                <div class="flex items-center justify-between">
+                  <h3 class="font-semibold text-lg">{event.title}</h3>
+                  <span
+                    class={`px-2 py-1 text-xs font-semibold rounded ${event.levelBadgeClass}`}
+                  >
+                    {event.levelText}
+                  </span>
+                </div>
+
+                <p class="text-sm text-dark/70 mt-1">
+                  {event.date ?? ""} • {event.time} • {event.venue}
+                </p>
+
+                <p class="text-dark/80 mt-3 line-clamp-2">
+                  {event.description}
+                </p>
+
+                <div class="mt-4 flex flex-col items-center justify-between gap-2">
+                  <span class="font-bold text-primary h-[2lh] w-full text-center">
+                    {event.price}
+                  </span>
+                  <div class="flex items-center gap-2">
+                    <a
+                      href={`/events/${createFullSlug(event.id, event.title)}`}
+                      class="text-primary hover:text-accent font-medium"
+                    >
+                      Details
+                    </a>
+                    <a
+                      href={URLS.REGISTRATION_FORM}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class={`px-4 py-2 rounded-full text-sm font-medium ${event.buttonClass}`}
+                    >
+                      {event.buttonText}
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
   <!-- Hero Section -->
   <section class="py-20 gradient-bg">
     <div class="container mx-auto px-4">
@@ -251,7 +349,7 @@ const processedEvents = allEvents.map((event) => {
                   </div>
                   <div class="flex items-center">
                     <span class="mr-2">👥</span>
-                    <span>{event.spotsText}</span>
+                    <span>{event.capacityText}</span>
                   </div>
                 </div>
 
@@ -270,21 +368,14 @@ const processedEvents = allEvents.map((event) => {
                     >
                       Details
                     </a>
-                    {!event.isSoldOut && (
-                      <a
-                        href={URLS.REGISTRATION_FORM}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class={`px-6 py-2 rounded-full font-medium transition-colors ${event.buttonClass}`}
-                      >
-                        {event.buttonText}
-                      </a>
-                    )}
-                    {event.isSoldOut && (
-                      <span class="px-6 py-2 rounded-full bg-gray-300 text-gray-600 font-medium cursor-not-allowed">
-                        Sold Out
-                      </span>
-                    )}
+                    <a
+                      href={URLS.REGISTRATION_FORM}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class={`px-6 py-2 rounded-full font-medium transition-colors ${event.buttonClass}`}
+                    >
+                      {event.buttonText}
+                    </a>
                   </div>
                 </div>
               </div>
@@ -335,16 +426,16 @@ const processedEvents = allEvents.map((event) => {
     // Filter and search functionality
     document.addEventListener("DOMContentLoaded", function () {
       const categoryFilter = document.getElementById(
-        "category-filter",
+        "category-filter"
       ) as HTMLSelectElement;
       const levelFilter = document.getElementById(
-        "level-filter",
+        "level-filter"
       ) as HTMLSelectElement;
       const searchInput = document.getElementById(
-        "search-input",
+        "search-input"
       ) as HTMLInputElement;
       const eventsGrid = document.getElementById(
-        "events-grid",
+        "events-grid"
       ) as HTMLDivElement;
       const noResults = document.getElementById("no-results") as HTMLDivElement;
 
@@ -375,7 +466,7 @@ const processedEvents = allEvents.map((event) => {
         const searchValue = searchInput.value.toLowerCase();
 
         const eventCards = document.querySelectorAll(
-          ".event-card",
+          ".event-card"
         ) as NodeListOf<HTMLDivElement>;
         let visibleCount = 0;
 
@@ -424,7 +515,7 @@ const processedEvents = allEvents.map((event) => {
       newsletterForm?.addEventListener("submit", function (e) {
         e.preventDefault();
         const emailInput = this.querySelector(
-          'input[type="email"]',
+          'input[type="email"]'
         ) as HTMLInputElement;
         if (!emailInput) {
           console.error("submit: Email input not found");
@@ -446,5 +537,3 @@ const processedEvents = allEvents.map((event) => {
     }
   </style>
 </BaseLayout>
-
-
