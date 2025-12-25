@@ -34,6 +34,6 @@ export const ORG_INFO = {
 // SEO and Meta Information
 export const SEO = {
   SITE_URL: "https://heartbeatimprov.com",
-  DEFAULT_IMAGE: "/images/og-image.jpg",
+  DEFAULT_IMAGE: "/images/heartbeat-logo.png",
   TWITTER_HANDLE: "@heartbeatimprov",
 };
