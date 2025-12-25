@@ -1,0 +1,35 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Thank you — Subscription received"
+  description="Thanks for subscribing to H.E.A.R.T. Beat Improv newsletter."
+>
+  <section class="py-28 gradient-bg">
+    <div class="container mx-auto px-4 text-center">
+      <div class="max-w-2xl mx-auto">
+        <h1 class="font-display text-5xl md:text-6xl font-bold mb-6">
+          Thanks for subscribing!
+        </h1>
+        <p class="text-xl text-dark/80 mb-8">
+          You're all set — please check your email to confirm your subscription.
+          We'll keep you posted about upcoming workshops, performances, and
+          special events.
+        </p>
+        <div class="flex items-center justify-center gap-4">
+          <a
+            href="/events"
+            class="px-6 py-3 rounded-full bg-primary text-white hover:bg-accent font-medium"
+            >View Events</a
+          >
+          <a
+            href="/"
+            class="px-6 py-3 rounded-full border border-primary text-primary hover:bg-primary/5"
+            >Back to Home</a
+          >
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

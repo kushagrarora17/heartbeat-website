@@ -405,8 +405,26 @@ const processedWeeklyEvents = (regularEvents || []).map((event) => {
         Subscribe to our newsletter to get notified about new workshops,
         performances, and special events.
       </p>
-      <form class="max-w-md mx-auto flex gap-4">
+      <form
+        id="newsletter-form"
+        name="newsletter"
+        method="POST"
+        action="/thank-you"
+        data-netlify="true"
+        netlify-honeypot="bot-field"
+        class="max-w-md mx-auto flex gap-4"
+      >
+        <input type="hidden" name="form-name" value="newsletter" />
+        <p class="hidden">
+          <label
+            >Don't fill this out if you're human: <input
+              name="bot-field"
+            /></label
+          >
+        </p>
+
         <input
+          name="email"
           type="email"
           placeholder="Enter your email"
           class="flex-1 px-4 py-3 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
@@ -419,6 +437,10 @@ const processedWeeklyEvents = (regularEvents || []).map((event) => {
           Subscribe
         </button>
       </form>
+      <noscript class="mt-4 text-sm text-dark/70"
+        >JavaScript is disabled — your browser will redirect to the thank-you
+        page after submitting.</noscript
+      >
     </div>
   </section>
 
@@ -510,21 +532,8 @@ const processedWeeklyEvents = (regularEvents || []).map((event) => {
       levelFilter.addEventListener("change", filterEvents);
       searchInput.addEventListener("input", filterEvents);
 
-      // Newsletter form submission
-      const newsletterForm = document.querySelector("form");
-      newsletterForm?.addEventListener("submit", function (e) {
-        e.preventDefault();
-        const emailInput = this.querySelector(
-          'input[type="email"]'
-        ) as HTMLInputElement;
-        if (!emailInput) {
-          console.error("submit: Email input not found");
-          return;
-        }
-        const email = emailInput.value;
-        alert(`Thank you for subscribing with email: ${email}`);
-        this.reset();
-      });
+      // Newsletter form - no client-side interception so Netlify can process the form and redirect to /thank-you
+      // (If you prefer AJAX handling to avoid a full page redirect, I can add an unobtrusive fetch-based handler later.)
     });
   </script>
 

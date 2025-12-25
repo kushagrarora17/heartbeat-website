@@ -368,48 +368,48 @@ export const regularEvents = [
     image: "/images/online-jam.jpg",
     gallery: ["/images/online-jam-1.jpg", "/images/online-jam-2.jpg"],
   },
-  // {
-  //   id: 102,
-  //   title: "Saturday Improv Jam",
-  //   publishDate: "2025-10-17",
-  //   date: "Every Saturday",
-  //   time: "1:00 PM",
-  //   venue: "Whitefield",
-  //   venueAddress:
-  //     "Kaavu, Whitefield, Bangalore (Full address provided after registration)",
-  //   description:
-  //     "An energetic, mid-day in-person jam located in the spacious and creative venue, Kaavu. Perfect for local improvisers to drop in and play.",
-  //   fullDescription: `
-  //           <p>Get your Saturday rolling with a dose of spontaneous comedy! This jam is held in a fantastic, central Whitefield location, making it ideal for the East Bangalore community.</p>
+  {
+    id: 102,
+    title: "Saturday Improv Jam",
+    publishDate: "2025-10-17",
+    date: "Every Saturday",
+    time: "11:00 AM",
+    venue: "Apartment Society",
+    venueAddress:
+      "Apartment Society, Haralur Road, HSR Layout extension, Bangalore (Full address provided after registration)",
+    description:
+      "An energetic, mid-day in-person jam located in the spacious and green surroundings of Apartment Society. Perfect for local improvisers to drop in and play.",
+    fullDescription: `
+            <p>Get your Saturday rolling with a dose of spontaneous comedy! This jam is held in the lush, open spaces of Apartment Society, offering a refreshing and vibrant environment ideal for creativity and play.</p>
 
-  //           <h3>What You'll Experience:</h3>
-  //           <ul>
-  //               <li>A mix of short-form games and opportunities for long-form scene practice</li>
-  //               <li>Feedback and direction from an experienced jam host</li>
-  //               <li>Opportunity to meet and network with fellow performers</li>
-  //           </ul>
+            <h3>What You'll Experience:</h3>
+            <ul>
+                <li>A mix of short-form games and opportunities for long-form scene practice</li>
+                <li>Feedback and direction from an experienced jam host</li>
+                <li>Opportunity to meet and network with fellow performers</li>
+            </ul>
 
-  //           <h3>Venue Specifics:</h3>
-  //           <p>Kaavu is a vibrant arts space with comfortable seating and excellent acoustics. **Registration is mandatory** for venue access; your unique ticket/link is required for entry.</p>
+            <h3>Venue Specifics:</h3>
+            <p>This apartemnt society is a spacious, green apartment society with plenty of open areas and comfortable seating. **Registration is mandatory** for venue access; your unique ticket/link is required for entry.</p>
 
-  //           <p>Come fueled and ready to play! Water bottles and snacks are recommended.</p>
-  //       `,
-  //   price: "₹599 (Includes a cover charge of ₹300)",
-  //   category: "in-person jam",
-  //   level: "all levels",
-  //   duration: "2 hours",
-  //   spots: 25,
-  //   booked: 20,
-  //   instructor: "Various Hosts",
-  //   instructorBio:
-  //     "Hosted by a rotating roster of senior improv professionals, bringing diverse styles and focuses to the jam each week.",
-  //   image: "/images/saturday-jam.jpg",
-  //   gallery: [
-  //     "/images/kaavu-jam-1.jpg",
-  //     "/images/kaavu-jam-2.jpg",
-  //     "/images/kaavu-venue.jpg",
-  //   ],
-  // },
+            <p>Come fueled and ready to play! Water bottles and snacks are recommended.</p>
+        `,
+    price: "₹199 (free for first-time attendees)",
+    category: "in-person jam",
+    level: "all levels",
+    duration: "2 hours",
+    spots: 25,
+    booked: 20,
+    instructor: "Kushagr Arora",
+    instructorBio:
+      "Kushagr is a seasoned improviser with over 4 years of experience. He has been hosting jams and performing shows across India, fostering a welcoming improv community.",
+    image: "/images/saturday-jam.jpg",
+    gallery: [
+      "/images/kaavu-jam-1.jpg",
+      "/images/kaavu-jam-2.jpg",
+      "/images/kaavu-venue.jpg",
+    ],
+  },
   {
     id: 103,
     title: "Sunday Improv Jam",
