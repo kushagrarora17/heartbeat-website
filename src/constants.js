@@ -24,7 +24,7 @@ export const URLS = {
 
 // Organization Information
 export const ORG_INFO = {
-  NAME: "H.E.A.R.T. Beat Improv",
+  NAME: "H.E.A.R.T Beat Improv",
   TAGLINE: "Bangalore's Premier Improv Comedy Community",
   DESCRIPTION:
     "Bangalore's most vibrant improv comedy community where creativity meets laughter.",

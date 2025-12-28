@@ -19,7 +19,7 @@
   <text x="300" y="340" font-family="Arial, sans-serif" font-size="60" font-weight="bold" fill="white" text-anchor="middle">H</text>
   
   <!-- Main Text -->
-  <text x="450" y="280" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="url(#textGrad)">H.E.A.R.T. Beat Improv</text>
+  <text x="450" y="280" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="url(#textGrad)">H.E.A.R.T Beat Improv</text>
   <text x="450" y="330" font-family="Arial, sans-serif" font-size="28" fill="#323e42">Bangalore's Premier Improv Comedy Community</text>
   <text x="450" y="370" font-family="Arial, sans-serif" font-size="24" fill="#7954a1">Join us for workshops, performances, and laughter!</text>
   

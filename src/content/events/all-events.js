@@ -41,7 +41,7 @@ export const allEvents = [
     booked: 12,
     instructor: "Priya Sharma",
     instructorBio:
-      "Priya has been performing and teaching improv for over 8 years. She's a founding member of H.E.A.R.T. Beat Improv and has trained with renowned improv schools in Chicago and London.",
+      "Priya has been performing and teaching improv for over 8 years. She's a founding member of H.E.A.R.T Beat Improv and has trained with renowned improv schools in Chicago and London.",
     image: "/images/workshop.jpg",
     gallery: [
       "/images/workshop-1.jpg",
@@ -133,7 +133,7 @@ export const allEvents = [
     booked: 8,
     instructor: "Arjun Menon",
     instructorBio:
-      "Arjun is a performer and workshop facilitator who specializes in long-form improv. He's been with H.E.A.R.T. Beat Improv for 5 years and has performed with improv groups across India and internationally.",
+      "Arjun is a performer and workshop facilitator who specializes in long-form improv. He's been with H.E.A.R.T Beat Improv for 5 years and has performed with improv groups across India and internationally.",
     image: "/images/masterclass.jpg",
     gallery: [
       "/images/masterclass-1.jpg",
