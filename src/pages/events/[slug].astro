@@ -13,6 +13,10 @@ export async function getStaticPaths() {
 const { event } = Astro.props;
 const capacity = event.spots ?? 0;
 
+// determine if this event is in the past
+const eventDate = new Date(event.date);
+const isPast = eventDate < new Date();
+
 import BaseLayout from "../../layouts/BaseLayout.astro";
 ---
 
@@ -163,14 +167,27 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
                 </div>
               </div>
 
-              <a
-                href={URLS.REGISTRATION_FORM}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="block w-full text-center py-4 rounded-full font-semibold transition-all duration-300 hover:scale-105 bg-primary text-white hover:bg-accent"
-              >
-                Register Now
-              </a>
+              {
+                isPast ? (
+                  <button
+                    class="block w-full text-center py-4 rounded-full font-semibold bg-gray-200 text-gray-500 cursor-not-allowed"
+                    disabled
+                    aria-disabled="true"
+                    title="This event has passed"
+                  >
+                    Event passed
+                  </button>
+                ) : (
+                  <a
+                    href={URLS.REGISTRATION_FORM}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="block w-full text-center py-4 rounded-full font-semibold transition-all duration-300 hover:scale-105 bg-primary text-white hover:bg-accent"
+                  >
+                    Register Now
+                  </a>
+                )
+              }
 
               <div class="mt-4 text-center text-sm text-dark/60">
                 <p>Secure payment • Instant confirmation</p>

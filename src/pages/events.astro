@@ -10,6 +10,8 @@ import {
 // Sample events data - in a real app, this would come from a CMS or API
 const allEvents = events.map((event) => ({
   ...event,
+  // keep the original date value for comparisons
+  rawDate: event.date,
   date: new Date(event.date).toLocaleDateString("en-IN", {
     weekday: "long",
     year: "numeric",
@@ -44,10 +46,13 @@ const levels = [
 // Process events data for display (simplified — no booked/remaining logic)
 const processedEvents = allEvents.map((event) => {
   const capacity = event.spots ?? 0;
+  const eventDate = new Date(event.rawDate || event.date);
+  const isPast = eventDate < new Date();
 
   return {
     ...event,
     capacity,
+    isPast,
     levelBadgeClass:
       event.level === "beginner"
         ? "bg-green-100 text-green-800"
@@ -70,18 +75,23 @@ const processedEvents = allEvents.map((event) => {
             : "🎨",
     // simplified: show capacity instead of remaining/booked logic
     capacityText: `${capacity} seats`,
-    buttonClass: "bg-primary text-white hover:bg-accent",
-    buttonText: "Register",
+    buttonClass: isPast
+      ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+      : "bg-primary text-white hover:bg-accent",
+    buttonText: isPast ? "Event passed" : "Register",
   };
 });
 
 // New: Process weekly (regular) events to render in the top "Weekly Events" section (no booked logic)
 const processedWeeklyEvents = (regularEvents || []).map((event) => {
   const capacity = event.spots ?? 0;
+  const eventDate = new Date(event.date);
+  const isPast = eventDate < new Date();
 
   return {
     ...event,
     capacity,
+    isPast,
     levelBadgeClass:
       event.level === "beginner"
         ? "bg-green-100 text-green-800"
@@ -104,8 +114,10 @@ const processedWeeklyEvents = (regularEvents || []).map((event) => {
             ? "💼"
             : "🎨",
     capacityText: `${capacity} seats`,
-    buttonClass: "bg-primary text-white hover:bg-accent",
-    buttonText: "Drop-in",
+    buttonClass: isPast
+      ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+      : "bg-primary text-white hover:bg-accent",
+    buttonText: isPast ? "Event passed" : "Drop-in",
   };
 });
 ---
@@ -167,14 +179,25 @@ const processedWeeklyEvents = (regularEvents || []).map((event) => {
                     >
                       Details
                     </a>
-                    <a
-                      href={URLS.REGISTRATION_FORM}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class={`px-4 py-2 rounded-full text-sm font-medium ${event.buttonClass}`}
-                    >
-                      {event.buttonText}
-                    </a>
+                    {event.isPast ? (
+                      <button
+                        class="px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-500 cursor-not-allowed"
+                        disabled
+                        aria-disabled="true"
+                        title="This event has passed"
+                      >
+                        Event passed
+                      </button>
+                    ) : (
+                      <a
+                        href={URLS.REGISTRATION_FORM}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class={`px-4 py-2 rounded-full text-sm font-medium ${event.buttonClass}`}
+                      >
+                        {event.buttonText}
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>
@@ -368,14 +391,25 @@ const processedWeeklyEvents = (regularEvents || []).map((event) => {
                     >
                       Details
                     </a>
-                    <a
-                      href={URLS.REGISTRATION_FORM}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class={`px-6 py-2 rounded-full font-medium transition-colors ${event.buttonClass}`}
-                    >
-                      {event.buttonText}
-                    </a>
+                    {event.isPast ? (
+                      <button
+                        class="px-6 py-2 rounded-full font-medium bg-gray-200 text-gray-500 cursor-not-allowed"
+                        disabled
+                        aria-disabled="true"
+                        title="This event has passed"
+                      >
+                        Event passed
+                      </button>
+                    ) : (
+                      <a
+                        href={URLS.REGISTRATION_FORM}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class={`px-6 py-2 rounded-full font-medium transition-colors ${event.buttonClass}`}
+                      >
+                        {event.buttonText}
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>
