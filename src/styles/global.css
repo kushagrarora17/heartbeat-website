@@ -4,16 +4,21 @@
 
 @layer base {
   html {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: "Inter", system-ui, sans-serif;
     scroll-behavior: smooth;
   }
-  
+
   body {
     @apply text-dark bg-white;
   }
-  
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Poppins', system-ui, sans-serif;
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Poppins", system-ui, sans-serif;
   }
 }
 
@@ -21,14 +26,88 @@
   .gradient-text {
     @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
   }
-  
+
   .gradient-bg {
     @apply bg-gradient-to-br from-primary/10 to-accent/10;
   }
-  
+
   .card-hover {
     @apply transition-all duration-300 hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-1;
   }
+
+  /* Flip card utilities */
+  .flip-card {
+    perspective: 1000px;
+    /* Ensure the card has a visible height even when children are absolutely positioned */
+    min-height: 14rem;
+  }
+
+  /* Slightly taller on medium+ screens for better spacing */
+  @media (min-width: 768px) {
+    .flip-card {
+      min-height: 16rem;
+    }
+  }
+
+  /* Use per-face rotations (more reliable across browsers like Chrome) */
+  .flip-card-inner {
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    position: relative;
+    height: 100%;
+    will-change: transform;
+  }
+
+  /* Faces setup */
+  .flip-card-front,
+  .flip-card-back {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    -webkit-transform-style: preserve-3d;
+    transition: opacity 0.45s ease, transform 0.6s ease;
+    will-change: opacity, transform;
+  }
+
+  .flip-card-front {
+    transform: rotateY(0deg) translateZ(0);
+    -webkit-transform: rotateY(0deg) translateZ(0);
+    z-index: 2; /* keep front above back by default */
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .flip-card-back {
+    transform: rotateY(180deg) translateZ(0);
+    -webkit-transform: rotateY(180deg) translateZ(0);
+    z-index: 1;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* On hover/focus, rotate the faces individually so the back becomes upright */
+  .flip-card:hover .flip-card-front,
+  .flip-card:focus-within .flip-card-front {
+    transform: rotateY(-180deg) translateZ(0);
+    -webkit-transform: rotateY(-180deg) translateZ(0);
+    opacity: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .flip-card:hover .flip-card-back,
+  .flip-card:focus-within .flip-card-back {
+    transform: rotateY(0deg) translateZ(0);
+    -webkit-transform: rotateY(0deg) translateZ(0);
+    opacity: 1;
+    z-index: 3;
+    pointer-events: auto;
+  }
 }
-
-
