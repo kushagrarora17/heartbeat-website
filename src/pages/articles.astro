@@ -200,7 +200,7 @@ const featuredArticles = allArticles.filter((article) => article.featured);
 
                   <h3 class="font-display font-semibold text-xl mb-3 line-clamp-2">
                     <a
-                      href={`/articles/${createFullSlug(article.id, article.title)}`}
+                      href={`/articles/${createFullSlug(article.title)}`}
                       class="hover:text-primary transition-colors"
                     >
                       {article.title}
@@ -230,7 +230,7 @@ const featuredArticles = allArticles.filter((article) => article.featured);
                       </div>
                     </div>
                     <a
-                      href={`/articles/${createFullSlug(article.id, article.title)}`}
+                      href={`/articles/${createFullSlug(article.title)}`}
                       class="text-primary hover:text-accent transition-colors font-medium"
                     >
                       Read More →
@@ -396,7 +396,7 @@ const featuredArticles = allArticles.filter((article) => article.featured);
 
                 <h3 class="font-display font-semibold text-xl mb-3 line-clamp-2">
                   <a
-                    href={`/articles/${createFullSlug(article.id, article.title)}`}
+                    href={`/articles/${createFullSlug(article.title)}`}
                     class="hover:text-primary transition-colors"
                   >
                     {article.title}
@@ -432,7 +432,7 @@ const featuredArticles = allArticles.filter((article) => article.featured);
                     </div>
                   </div>
                   <a
-                    href={`/articles/${createFullSlug(article.id, article.title)}`}
+                    href={`/articles/${createFullSlug(article.title)}`}
                     class="text-primary hover:text-accent transition-colors font-medium"
                   >
                     Read More →

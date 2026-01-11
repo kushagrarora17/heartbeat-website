@@ -6,6 +6,8 @@ import {
   allEvents as events,
   regularEvents,
 } from "../content/events/all-events.js";
+import type { SanityDocument } from "@sanity/client";
+import { sanityClient } from "sanity:client";
 
 // Sample events data - in a real app, this would come from a CMS or API
 const allEvents = events.map((event) => ({
@@ -43,8 +45,40 @@ const levels = [
   { value: "advanced", label: "Advanced" },
 ];
 
+// Fetch events with fields used by this page. We alias _id to id and project slug.current
+// We order by the event `date` (ascending) so upcoming events appear first.
+const EVENTS_QUERY = `*[_type == "event" && defined(slug.current)] | order(date asc)[0...50]{
+  "id": _id,
+  title,
+  "slug": slug.current,
+  publishDate,
+  date,
+  time,
+  venue,
+  description,
+  price,
+  category,
+  level,
+  duration,
+  spots,
+  booked,
+  image{asset->{_id, url}}
+}`;
+
+let dbEvents: SanityDocument[] = [];
+try {
+  dbEvents = await sanityClient.fetch<SanityDocument[]>(EVENTS_QUERY);
+  console.log(
+    "Fetched events from Sanity (count):",
+    Array.isArray(dbEvents) ? dbEvents.length : typeof dbEvents
+  );
+} catch (err) {
+  console.error("Error fetching events from Sanity:", err);
+  dbEvents = [];
+}
+
 // Process events data for display (simplified — no booked/remaining logic)
-const processedEvents = allEvents.map((event) => {
+const processedEvents = dbEvents.map((event) => {
   const capacity = event.spots ?? 0;
   const eventDate = new Date(event.rawDate || event.date);
   const isPast = eventDate < new Date();
@@ -174,7 +208,7 @@ const processedWeeklyEvents = (regularEvents || []).map((event) => {
                   </span>
                   <div class="flex items-center gap-2">
                     <a
-                      href={`/events/${createFullSlug(event.id, event.title)}`}
+                      href={`/events/${createFullSlug(event.title)}`}
                       class="text-primary hover:text-accent font-medium"
                     >
                       Details
@@ -386,7 +420,7 @@ const processedWeeklyEvents = (regularEvents || []).map((event) => {
                   </span>
                   <div class="flex items-center gap-2">
                     <a
-                      href={`/events/${createFullSlug(event.id, event.title)}`}
+                      href={`/events/${createFullSlug(event.title)}`}
                       class="text-primary hover:text-accent transition-colors font-medium"
                     >
                       Details

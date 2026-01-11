@@ -3,21 +3,27 @@ import { createFullSlug, extractIdFromSlug } from "../../utils/slug.js";
 import { URLS } from "../../constants.js";
 import { allEvents, regularEvents } from "../../content/events/all-events.js";
 
-export async function getStaticPaths() {
-  return [...allEvents, ...regularEvents].map((event) => ({
-    params: { slug: createFullSlug(event.id, event.title) },
-    props: { event },
-  }));
-}
+const EVENT_QUERY = `*[_type == "event" && slug.current == $slug][0]`;
+const event = await sanityClient.fetch<SanityDocument>(
+  EVENT_QUERY,
+  Astro.params
+);
 
-const { event } = Astro.props;
-const capacity = event.spots ?? 0;
+export async function getStaticPaths(): Promise<{ params: { slug: string } }> {
+  const SLUGS_QUERY = `*[_type == "event" && defined(slug.current)]{
+    "params": {"slug": slug.current}
+  }`;
+  return await sanityClient.fetch(SLUGS_QUERY, Astro.params);
+}
 
 // determine if this event is in the past
 const eventDate = new Date(event.date);
 const isPast = eventDate < new Date();
 
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { sanityClient } from "sanity:client";
+import { SanityDocument } from "@sanity/client";
+import { toHTML } from "@portabletext/to-html";
 ---
 
 <BaseLayout
@@ -120,7 +126,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
                   <div>
                     <div class="font-semibold">Availability</div>
                     <div class="font-medium text-green-600">
-                      {capacity} seats
+                      {event.spots} seats
                     </div>
                   </div>
                 </div>
@@ -163,7 +169,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
                   {event.price}
                 </div>
                 <div class="text-sm font-medium text-green-600">
-                  {capacity} seats
+                  {event.spots} seats
                 </div>
               </div>
 
@@ -204,7 +210,20 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     <div class="container mx-auto px-4">
       <div class="max-w-4xl mx-auto">
         <div class="prose prose-lg max-w-none">
-          <div set:html={event.fullDescription} />
+          {
+            // Render Sanity portable text safely — convert to HTML on the server.
+            // Handle both array (portable text) and plain string gracefully.
+            (() => {
+              const full = event.fullDescription;
+              const html =
+                typeof full === "string"
+                  ? full
+                  : Array.isArray(full)
+                    ? toHTML(full)
+                    : "";
+              return <div set:html={html} />;
+            })()
+          }
         </div>
 
         {

@@ -1,10 +1,10 @@
 ---
-import { createFullSlug, extractIdFromSlug } from "../../utils/slug.js";
+import { createFullSlug } from "../../utils/slug.js";
 import { allArticles } from "../../content/articles/all-articles.js";
 
 export async function getStaticPaths() {
   return allArticles.map((article) => ({
-    params: { slug: createFullSlug(article.id, article.title) },
+    params: { slug: createFullSlug(article.title) },
     props: { article },
   }));
 }

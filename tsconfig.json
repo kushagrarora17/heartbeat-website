@@ -1,0 +1,5 @@
+{
+  "compilerOptions": {
+    "types": ["@sanity/astro/module"]
+  }
+}

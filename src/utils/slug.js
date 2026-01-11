@@ -6,10 +6,10 @@
 export function generateSlug(title) {
   return title
     .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters except spaces and hyphens
-    .replace(/\s+/g, '-') // Replace spaces with hyphens
-    .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
-    .trim('-'); // Remove leading/trailing hyphens
+    .replace(/[^a-z0-9\s-]/g, "") // Remove special characters except spaces and hyphens
+    .replace(/\s+/g, "-") // Replace spaces with hyphens
+    .replace(/-+/g, "-") // Replace multiple hyphens with single hyphen
+    .trim("-"); // Remove leading/trailing hyphens
 }
 
 /**
@@ -18,9 +18,9 @@ export function generateSlug(title) {
  * @param {string} title - The item title
  * @returns {string} - Full slug in format "id-title-slug"
  */
-export function createFullSlug(id, title) {
+export function createFullSlug(title) {
   const titleSlug = generateSlug(title);
-  return `${id}-${titleSlug}`;
+  return titleSlug;
 }
 
 /**
@@ -32,5 +32,3 @@ export function extractIdFromSlug(slug) {
   const match = slug.match(/^(\d+)-/);
   return match ? match[1] : null;
 }
-
-
