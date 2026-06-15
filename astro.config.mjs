@@ -6,6 +6,7 @@ import netlify from "@astrojs/netlify";
 export default defineConfig({
   integrations: [tailwind()],
   site: "https://heartbeatimprov.com",
+  trailingSlash: "always",
 
   build: {
     inlineStylesheets: "auto",

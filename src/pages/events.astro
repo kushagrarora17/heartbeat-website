@@ -174,7 +174,7 @@ const processedWeeklyEvents = (regularEvents || []).map((event) => {
                   </span>
                   <div class="flex items-center gap-2">
                     <a
-                      href={`/events/${createFullSlug(event.id, event.title)}`}
+                      href={`/events/${createFullSlug(event.id, event.title)}/`}
                       class="text-primary hover:text-accent font-medium"
                     >
                       Details
@@ -386,7 +386,7 @@ const processedWeeklyEvents = (regularEvents || []).map((event) => {
                   </span>
                   <div class="flex items-center gap-2">
                     <a
-                      href={`/events/${createFullSlug(event.id, event.title)}`}
+                      href={`/events/${createFullSlug(event.id, event.title)}/`}
                       class="text-primary hover:text-accent transition-colors font-medium"
                     >
                       Details

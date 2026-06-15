@@ -15,7 +15,14 @@ const {
   type = "website",
 } = Astro.props;
 
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const pathname =
+  Astro.url.pathname === "/"
+    ? "/"
+    : Astro.url.pathname.endsWith("/")
+      ? Astro.url.pathname
+      : `${Astro.url.pathname}/`;
+
+const canonicalURL = new URL(pathname, Astro.site);
 import "../styles/global.css";
 ---
 
@@ -83,7 +90,7 @@ import "../styles/global.css";
               >Home</a
             >
             <a
-              href="/events"
+              href="/events/"
               class="text-dark hover:text-primary transition-colors font-medium"
               >Events</a
             >
@@ -134,7 +141,7 @@ import "../styles/global.css";
               >Home</a
             >
             <a
-              href="/events"
+              href="/events/"
               class="text-dark hover:text-primary transition-colors font-medium"
               >Events</a
             >
@@ -198,14 +205,14 @@ import "../styles/global.css";
             <ul class="space-y-2">
               <li>
                 <a
-                  href="/events"
+                  href="/events/"
                   class="text-gray-300 hover:text-primary transition-colors"
                   >Upcoming Events</a
                 >
               </li>
               <li>
                 <a
-                  href="/articles"
+                  href="/articles/"
                   class="text-gray-300 hover:text-primary transition-colors"
                   >Articles & Tips</a
                 >

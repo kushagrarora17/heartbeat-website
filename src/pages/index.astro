@@ -63,7 +63,7 @@ const testimonials = [
           Join Our Community
         </a>
         <a
-          href="/events"
+          href="/events/"
           class="border-2 border-primary text-primary px-8 py-4 rounded-full text-lg font-semibold hover:bg-primary hover:text-white transition-all duration-300"
         >
           View Events
@@ -288,13 +288,13 @@ const testimonials = [
                     {event.price}
                   </span> */}
                   <a
-                    href={`/events/${createFullSlug(event.id, event.title)}`}
+                    href={`/events/${createFullSlug(event.id, event.title)}/`}
                     class="text-primary hover:text-accent transition-colors font-medium"
                   >
                     Learn More
                   </a>
                   <a
-                    href={`/events/${createFullSlug(event.id, event.title)}`}
+                    href={`/events/${createFullSlug(event.id, event.title)}/`}
                     class="bg-primary text-white px-6 py-2 rounded-full hover:bg-accent transition-colors font-medium"
                   >
                     Sign up
@@ -308,7 +308,7 @@ const testimonials = [
 
       <div class="text-center">
         <a
-          href="/events"
+          href="/events/"
           class="inline-block bg-primary text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-accent transition-all duration-300 hover:scale-105"
         >
           View All Events
@@ -464,7 +464,7 @@ const testimonials = [
           Register Now
         </a>
         <a
-          href="/events"
+          href="/events/"
           class="border-2 border-primary text-primary px-8 py-4 rounded-full text-lg font-semibold hover:bg-primary hover:text-white transition-all duration-300"
         >
           Browse Events
