@@ -1,6 +1,7 @@
 ---
-import { createFullSlug, extractIdFromSlug } from "../../utils/slug.js";
+import { createFullSlug } from "../../utils/slug.js";
 import { allArticles } from "../../content/articles/all-articles.js";
+import { sanitizeTrustedHtml } from "../../utils/trusted-html.js";
 
 export async function getStaticPaths() {
   return allArticles.map((article) => ({
@@ -10,6 +11,7 @@ export async function getStaticPaths() {
 }
 
 const { article } = Astro.props;
+const articleContent = sanitizeTrustedHtml(article.content, `article ${article.id}`);
 
 import BaseLayout from "../../layouts/BaseLayout.astro";
 ---
@@ -109,8 +111,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         </div>
 
         <!-- Article Content -->
-        <div class="prose prose-lg max-w-none mb-12">
-          <div set:html={article.content} />
+        <div class="article-prose prose prose-lg max-w-none mb-12">
+          <div set:html={articleContent} />
         </div>
 
         <!-- Author Bio -->
@@ -205,46 +207,4 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       </div>
     </div>
   </section>
-
-  <style>
-    .prose {
-      @apply text-dark/80;
-    }
-
-    .prose h2 {
-      @apply font-display text-2xl font-semibold mt-12 mb-6 text-dark;
-    }
-
-    .prose h3 {
-      @apply font-display text-xl font-semibold mt-8 mb-4 text-dark;
-    }
-
-    .prose p {
-      @apply mb-6 leading-relaxed;
-    }
-
-    .prose ul {
-      @apply space-y-2 mb-6;
-    }
-
-    .prose li {
-      @apply leading-relaxed;
-    }
-
-    .prose blockquote {
-      @apply border-l-4 border-primary pl-6 my-8 italic bg-primary/5 py-4 rounded-r-lg;
-    }
-
-    .prose blockquote p {
-      @apply mb-2;
-    }
-
-    .prose blockquote cite {
-      @apply text-sm text-dark/60 not-italic font-medium;
-    }
-
-    .prose strong {
-      @apply font-semibold text-dark;
-    }
-  </style>
 </BaseLayout>
