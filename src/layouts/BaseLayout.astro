@@ -1,21 +1,38 @@
 ---
-import { CONTACT, URLS, ORG_INFO } from "../constants.js";
+import { CONTACT, URLS, ORG_INFO, SEO } from "../constants.js";
+import { buildSiteSchema } from "../utils/schema.js";
 
 export interface Props {
   title: string;
   description?: string;
   image?: string;
+  imageAlt?: string;
   type?: string;
+  keywords?: string;
+  noindex?: boolean;
+  publishedTime?: string;
+  modifiedTime?: string;
+  jsonLd?: object | object[];
 }
 
 const {
   title,
   description = `${ORG_INFO.NAME} - ${ORG_INFO.TAGLINE}`,
-  image = "/images/heartbeat-logo.png",
+  image = SEO.DEFAULT_IMAGE,
+  imageAlt = title,
   type = "website",
+  keywords = "improv shows in bangalore, improv jams bengaluru, improv comedy, improv shows near Cubbon Park, online improv jam",
+  noindex = false,
+  publishedTime,
+  modifiedTime,
+  jsonLd,
 } = Astro.props;
 
+const siteSchema = buildSiteSchema();
+const allJsonLd = [...siteSchema, ...(Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [])];
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const ogImageUrl = new URL(image, Astro.site);
+const validOgType = ["website", "article", "profile", "book"].includes(type) ? type : "website";
 import "../styles/global.css";
 ---
 
@@ -36,25 +53,32 @@ import "../styles/global.css";
     <title>{title}</title>
     <meta name="title" content={title} />
     <meta name="description" content={description} />
-    <meta
-      name="keywords"
-      content="improv shows in bangalore, improv jams bengaluru, improv comedy, improv shows near Cubbon Park, online improv jam"
-    />
+    <meta name="keywords" content={keywords} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
     <link rel="canonical" href={canonicalURL} />
 
     <!-- Open Graph / Facebook -->
-    <meta property="og:type" content={type} />
+    <meta property="og:type" content={validOgType} />
     <meta property="og:url" content={canonicalURL} />
+    <meta property="og:site_name" content={ORG_INFO.NAME} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={new URL(image, Astro.url)} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:alt" content={imageAlt} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_IN" />
+    {publishedTime && <meta property="article:published_time" content={publishedTime} />}
+    {modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:site" content={SEO.TWITTER_HANDLE} />
     <meta property="twitter:url" content={canonicalURL} />
     <meta property="twitter:title" content={title} />
     <meta property="twitter:description" content={description} />
-    <meta property="twitter:image" content={new URL(image, Astro.url)} />
+    <meta property="twitter:image" content={ogImageUrl} />
+    <meta property="twitter:image:alt" content={imageAlt} />
 
     <!-- Fonts (non-blocking preload of Google Fonts stylesheet) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -72,22 +96,22 @@ import "../styles/global.css";
       />
     </noscript>
 
-    <!-- Styles -->
-    <!-- <link rel="stylesheet" href="/src/styles/global.css" /> -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9Z1GQCD2FB"
-    ></script></head
-  >
-  <!-- Google tag (gtag.js) -->
+    <!-- JSON-LD Structured Data -->
+    {allJsonLd.map((node) => (
+      <script type="application/ld+json" set:html={JSON.stringify(node).replace(/</g, "\\u003c")} />
+    ))}
 
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() {
-      dataLayer.push(arguments);
-    }
-    gtag("js", new Date());
-
-    gtag("config", "G-9Z1GQCD2FB");
-  </script>
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9Z1GQCD2FB"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-9Z1GQCD2FB");
+    </script>
+  </head>
   <body class="min-h-screen flex flex-col">
     <header
       class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-secondary/30"
@@ -115,6 +139,21 @@ import "../styles/global.css";
               href="/events"
               class="text-dark hover:text-primary transition-colors font-medium"
               >Events</a
+            >
+            <a
+              href="/workshops"
+              class="text-dark hover:text-primary transition-colors font-medium"
+              >Workshops</a
+            >
+            <a
+              href="/jams"
+              class="text-dark hover:text-primary transition-colors font-medium"
+              >Jams</a
+            >
+            <a
+              href="/articles"
+              class="text-dark hover:text-primary transition-colors font-medium"
+              >Articles</a
             >
             <a
               href="#contact"
@@ -166,6 +205,21 @@ import "../styles/global.css";
               href="/events"
               class="text-dark hover:text-primary transition-colors font-medium"
               >Events</a
+            >
+            <a
+              href="/workshops"
+              class="text-dark hover:text-primary transition-colors font-medium"
+              >Workshops</a
+            >
+            <a
+              href="/jams"
+              class="text-dark hover:text-primary transition-colors font-medium"
+              >Jams</a
+            >
+            <a
+              href="/articles"
+              class="text-dark hover:text-primary transition-colors font-medium"
+              >Articles</a
             >
             <a
               href="#contact"
@@ -230,6 +284,20 @@ import "../styles/global.css";
                   href="/events"
                   class="text-gray-300 hover:text-primary transition-colors"
                   >Upcoming Events</a
+                >
+              </li>
+              <li>
+                <a
+                  href="/workshops"
+                  class="text-gray-300 hover:text-primary transition-colors"
+                  >Workshops</a
+                >
+              </li>
+              <li>
+                <a
+                  href="/jams"
+                  class="text-gray-300 hover:text-primary transition-colors"
+                  >Weekly Jams</a
                 >
               </li>
               <li>

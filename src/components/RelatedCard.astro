@@ -1,0 +1,28 @@
+---
+interface Props {
+  href: string;
+  title: string;
+  meta?: string;
+  excerpt?: string;
+  badge?: string;
+  emoji?: string;
+}
+
+const { href, title, meta, excerpt, badge, emoji = "📰" } = Astro.props;
+---
+
+<a href={href} class="group">
+  <article
+    class="bg-white/80 backdrop-blur-sm border border-secondary/30 rounded-lg p-6 hover:border-primary/50 hover:shadow-lg transition-all h-full flex flex-col"
+  >
+    <div class="mb-4">
+      <div class="text-4xl mb-2">{emoji}</div>
+      {badge && <span class="inline-block px-3 py-1 bg-accent/10 text-accent text-xs font-semibold rounded-full">{badge}</span>}
+    </div>
+    <h3 class="font-display text-lg font-bold text-dark mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+      {title}
+    </h3>
+    {meta && <p class="text-xs text-dark/60 mb-3">{meta}</p>}
+    {excerpt && <p class="text-dark/70 text-sm line-clamp-3 flex-grow">{excerpt}</p>}
+  </article>
+</a>

@@ -1,23 +1,37 @@
 import { createFullSlug } from '../utils/slug.js';
 import { SEO } from '../constants.js';
-import { allEvents } from '../content/events/all-events.js';
+import { allEvents, regularEvents } from '../content/events/all-events.js';
 import { allArticles } from '../content/articles/all-articles.js';
+import { resolveEventDates } from '../utils/schema.js';
 
 export async function GET() {
   // Generate sitemap for SEO
-  const baseUrl = SEO.SITE_URL;
+  const baseUrl = SEO.SITE_URL.replace(/\/$/, '');
   const pages = [
     { url: '/', changefreq: 'weekly', priority: 1.0 },
     { url: '/events', changefreq: 'daily', priority: 0.9 },
     { url: '/articles', changefreq: 'weekly', priority: 0.8 },
+    { url: '/jams', changefreq: 'weekly', priority: 0.9 },
+    { url: '/workshops', changefreq: 'monthly', priority: 0.8 },
   ];
 
   // Add individual event pages with SEO-friendly slugs
   allEvents.forEach(event => {
+    const { isPast } = resolveEventDates(event);
+    pages.push({
+      url: `/events/${createFullSlug(event.id, event.title)}`,
+      changefreq: isPast ? 'yearly' : 'weekly',
+      priority: isPast ? 0.4 : 0.7,
+      lastmod: event.publishDate,
+    });
+  });
+
+  // Add recurring event pages (jams) - these always have upcoming dates
+  regularEvents.forEach(event => {
     pages.push({
       url: `/events/${createFullSlug(event.id, event.title)}`,
       changefreq: 'weekly',
-      priority: 0.7,
+      priority: 0.8,
       lastmod: event.publishDate,
     });
   });

@@ -1,6 +1,10 @@
 ---
-import { createFullSlug, extractIdFromSlug } from "../../utils/slug.js";
+import { createFullSlug } from "../../utils/slug.js";
 import { allArticles } from "../../content/articles/all-articles.js";
+import { allEvents, regularEvents } from "../../content/events/all-events.js";
+import { buildBlogPostingSchema, buildBreadcrumb } from "../../utils/schema.js";
+import { relatedArticlesForArticle, relatedEventsForArticle } from "../../utils/related.js";
+import RelatedGrid from "../../components/RelatedGrid.astro";
 
 export async function getStaticPaths() {
   return allArticles.map((article) => ({
@@ -11,14 +15,40 @@ export async function getStaticPaths() {
 
 const { article } = Astro.props;
 
+const articleSchema = buildBlogPostingSchema(article, { url: Astro.url.href });
+const breadcrumb = buildBreadcrumb([
+  { name: "Home", url: "/" },
+  { name: "Articles", url: "/articles" },
+  { name: article.title, url: Astro.url.pathname },
+]);
+
+const allEventsData = [...allEvents, ...regularEvents];
+const relatedArticles = relatedArticlesForArticle(article, allArticles, { limit: 3 });
+const relatedEvents = relatedEventsForArticle(article, allEventsData, { limit: 3 });
+
+const relatedArticleItems = relatedArticles.map((a) => ({
+  name: a.title,
+  url: `/articles/${createFullSlug(a.id, a.title)}`,
+  excerpt: a.excerpt,
+  emoji: "📰",
+}));
+
+const relatedEventItems = relatedEvents.map((e) => ({
+  name: e.title,
+  url: `/events/${createFullSlug(e.id, e.title)}`,
+  excerpt: e.description,
+}));
+
 import BaseLayout from "../../layouts/BaseLayout.astro";
 ---
 
 <BaseLayout
   title={`${article.title} - H.E.A.R.T Beat Improv`}
   description={article.excerpt}
-  image={article.image}
   type="article"
+  publishedTime={article.date}
+  keywords={article.tags.join(", ") + ", improv comedy"}
+  jsonLd={articleSchema ? [articleSchema, breadcrumb] : [breadcrumb]}
 >
   <!-- Article Header -->
   <article class="py-20">
@@ -77,9 +107,9 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
           <div class="flex flex-wrap justify-center gap-2 mb-8">
             {
               article.tags.map((tag) => (
-                <span class="bg-gray-100 text-dark/70 px-3 py-1 rounded-full text-sm">
+                <a href={`/articles?tag=${encodeURIComponent(tag)}`} class="bg-gray-100 hover:bg-primary text-dark/70 hover:text-white px-3 py-1 rounded-full text-sm transition-colors">
                   #{tag}
-                </span>
+                </a>
               ))
             }
           </div>
@@ -183,28 +213,21 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     </div>
   </article>
 
-  <!-- Related Articles -->
-  <section class="py-20 gradient-bg">
-    <div class="container mx-auto px-4">
-      <div class="text-center mb-12">
-        <h2 class="font-display text-3xl md:text-4xl font-bold mb-6">
-          More <span class="gradient-text">Articles</span>
-        </h2>
-        <p class="text-xl text-dark/80">
-          Continue exploring our collection of improv insights
-        </p>
-      </div>
+  <RelatedGrid
+    heading="Keep Reading"
+    subheading="More articles on improv and personal growth"
+    items={relatedArticleItems}
+    viewAllHref="/articles"
+    viewAllLabel="View All Articles"
+  />
 
-      <div class="text-center">
-        <a
-          href="/articles"
-          class="inline-block bg-primary text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-accent transition-all duration-300 hover:scale-105"
-        >
-          View All Articles
-        </a>
-      </div>
-    </div>
-  </section>
+  <RelatedGrid
+    heading="Try These Events"
+    subheading="Workshops and jams based on your interests"
+    items={relatedEventItems}
+    viewAllHref="/events"
+    viewAllLabel="View All Events"
+  />
 
   <style>
     .prose {

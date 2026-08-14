@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { createFullSlug } from "../utils/slug.js";
 import { URLS } from "../constants.js";
+import { buildBreadcrumb } from "../utils/schema.js";
 import { regularEvents } from "../content/events/all-events.js";
 
 const testimonials = [
@@ -27,11 +28,15 @@ const testimonials = [
     image: "/images/testimonial3.jpg",
   },
 ];
+
+const breadcrumb = buildBreadcrumb([{ name: "Home", url: "/" }]);
 ---
 
 <BaseLayout
   title="Improv Shows in Bangalore | Learn Improv Comedy | H.E.A.R.T Beat"
   description="Looking for improv shows in bangalore or improv jams bengaluru? H.E.A.R.T Beat produces improv shows across Bangalore (performances near Cubbon Park), hosts weekly improv jams in Bengaluru and online, and runs improv comedy courses, workshops and corporate sessions."
+  keywords="improv shows bangalore, improv jams bengaluru, improv comedy courses, improv workshop, improv class bangalore"
+  jsonLd={breadcrumb}
 >
   <!-- Hero Section -->
   <section
@@ -137,7 +142,7 @@ const testimonials = [
           </div>
         </div>
 
-        <div class="flip-card group" tabindex="0" aria-labelledby="work-title">
+        <a href="/workshops" class="flip-card group" tabindex="0" aria-labelledby="work-title">
           <div class="flip-card-inner">
             <div
               class="flip-card-front bg-white rounded-2xl p-8 shadow-lg text-center"
@@ -169,9 +174,9 @@ const testimonials = [
               </p>
             </div>
           </div>
-        </div>
+        </a>
 
-        <div class="flip-card group" tabindex="0" aria-labelledby="comm-title">
+        <a href="/jams" class="flip-card group" tabindex="0" aria-labelledby="comm-title">
           <div class="flip-card-inner">
             <div
               class="flip-card-front bg-white rounded-2xl p-8 shadow-lg text-center"
@@ -203,7 +208,7 @@ const testimonials = [
               </p>
             </div>
           </div>
-        </div>
+        </a>
 
         <div
           class="flip-card group"

@@ -1,0 +1,57 @@
+---
+import RelatedCard from "./RelatedCard.astro";
+
+interface Item {
+  name: string;
+  url: string;
+  emoji?: string;
+  meta?: string;
+  excerpt?: string;
+  badge?: string;
+}
+
+interface Props {
+  heading: string;
+  subheading?: string;
+  items: Item[];
+  viewAllHref?: string;
+  viewAllLabel?: string;
+}
+
+const { heading, subheading, items, viewAllHref, viewAllLabel = "View All" } = Astro.props;
+---
+
+{
+  items.length > 0 && (
+    <section class="py-16 bg-gradient-to-b from-transparent to-secondary/5">
+      <div class="container mx-auto px-4">
+        <div class="mb-12">
+          <h2 class="font-display text-3xl md:text-4xl font-bold text-dark mb-2">{heading}</h2>
+          {subheading && <p class="text-dark/70 text-lg">{subheading}</p>}
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {items.map((item) => (
+            <RelatedCard
+              href={item.url}
+              title={item.name}
+              meta={item.meta}
+              excerpt={item.excerpt}
+              badge={item.badge}
+              emoji={item.emoji}
+            />
+          ))}
+        </div>
+        {viewAllHref && (
+          <div class="text-center">
+            <a
+              href={viewAllHref}
+              class="inline-block px-6 py-3 bg-primary text-white rounded-full hover:bg-accent transition-colors font-medium"
+            >
+              {viewAllLabel}
+            </a>
+          </div>
+        )}
+      </div>
+    </section>
+  )
+}

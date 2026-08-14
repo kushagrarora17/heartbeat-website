@@ -1,7 +1,12 @@
 ---
-import { createFullSlug, extractIdFromSlug } from "../../utils/slug.js";
+import { createFullSlug } from "../../utils/slug.js";
 import { URLS } from "../../constants.js";
 import { allEvents, regularEvents } from "../../content/events/all-events.js";
+import { allArticles } from "../../content/articles/all-articles.js";
+import { buildEventSchema, buildBreadcrumb, resolveEventDates } from "../../utils/schema.js";
+import { parseRecurrence } from "../../utils/date.js";
+import { relatedEventsForEvent, relatedArticlesForEvent } from "../../utils/related.js";
+import RelatedGrid from "../../components/RelatedGrid.astro";
 
 export async function getStaticPaths() {
   return [...allEvents, ...regularEvents].map((event) => ({
@@ -13,9 +18,33 @@ export async function getStaticPaths() {
 const { event } = Astro.props;
 const capacity = event.spots ?? 0;
 
-// determine if this event is in the past
-const eventDate = new Date(event.date);
-const isPast = eventDate < new Date();
+const { isPast, startDate } = resolveEventDates(event);
+const recurrence = parseRecurrence(event.date);
+const eventDateObj = startDate ? new Date(startDate) : null;
+
+const eventSchema = buildEventSchema(event, { url: Astro.url.href });
+const breadcrumb = buildBreadcrumb([
+  { name: "Home", url: "/" },
+  { name: "Events", url: "/events" },
+  { name: event.title, url: Astro.url.pathname },
+]);
+
+const allEventsData = [...allEvents, ...regularEvents];
+const relatedEvents = relatedEventsForEvent(event, allEventsData, { limit: 3 });
+const relatedArticles = relatedArticlesForEvent(event, allArticles, { limit: 3 });
+
+const relatedEventItems = relatedEvents.map((e) => ({
+  name: e.title,
+  url: `/events/${createFullSlug(e.id, e.title)}`,
+  excerpt: e.description,
+}));
+
+const relatedArticleItems = relatedArticles.map((a) => ({
+  name: a.title,
+  url: `/articles/${createFullSlug(a.id, a.title)}`,
+  excerpt: a.excerpt,
+  emoji: "📰",
+}));
 
 import BaseLayout from "../../layouts/BaseLayout.astro";
 ---
@@ -23,8 +52,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 <BaseLayout
   title={`${event.title} - H.E.A.R.T Beat Improv`}
   description={event.description}
-  image={event.image}
-  type="event"
+  jsonLd={eventSchema ? [eventSchema, breadcrumb] : [breadcrumb]}
 >
   <!-- Hero Section -->
   <section class="py-20 gradient-bg">
@@ -74,14 +102,18 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
                   <span class="text-primary mr-3 text-xl">📅</span>
                   <div>
                     <div class="font-semibold">
-                      {
-                        new Date(event.date).toLocaleDateString("en-IN", {
+                      {recurrence ? (
+                        recurrence.label
+                      ) : eventDateObj ? (
+                        eventDateObj.toLocaleDateString("en-IN", {
                           weekday: "long",
                           year: "numeric",
                           month: "long",
                           day: "numeric",
                         })
-                      }
+                      ) : (
+                        "Date TBD"
+                      )}
                     </div>
                     <div class="text-dark/70">{event.time}</div>
                   </div>
@@ -231,28 +263,21 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     </div>
   </section>
 
-  <!-- Related Events -->
-  <section class="py-20 gradient-bg">
-    <div class="container mx-auto px-4">
-      <div class="text-center mb-12">
-        <h2 class="font-display text-3xl md:text-4xl font-bold mb-6">
-          More <span class="gradient-text">Events</span>
-        </h2>
-        <p class="text-xl text-dark/80">
-          Discover other exciting events and workshops
-        </p>
-      </div>
+  <RelatedGrid
+    heading="Similar Events"
+    subheading="Events you might enjoy"
+    items={relatedEventItems}
+    viewAllHref="/events"
+    viewAllLabel="View All Events"
+  />
 
-      <div class="text-center">
-        <a
-          href="/events"
-          class="inline-block bg-primary text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-accent transition-all duration-300 hover:scale-105"
-        >
-          View All Events
-        </a>
-      </div>
-    </div>
-  </section>
+  <RelatedGrid
+    heading="Learn More"
+    subheading="Articles to deepen your improv knowledge"
+    items={relatedArticleItems}
+    viewAllHref="/articles"
+    viewAllLabel="View All Articles"
+  />
 
   <style>
     .prose h3 {

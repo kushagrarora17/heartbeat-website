@@ -1,0 +1,212 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { createFullSlug } from "../utils/slug.js";
+import { URLS } from "../constants.js";
+import { allEvents } from "../content/events/all-events.js";
+import { buildItemList, buildBreadcrumb, buildFaqSchema } from "../utils/schema.js";
+
+const workshopEvents = allEvents.filter(
+  (e) => e.category === "workshop" || e.category === "corporate"
+);
+
+const workshopList = workshopEvents.map((e) => ({
+  name: e.title,
+  url: `/events/${createFullSlug(e.id, e.title)}`,
+}));
+
+const itemList = buildItemList(workshopList, { name: "Workshops", url: "/workshops" });
+const breadcrumb = buildBreadcrumb([
+  { name: "Home", url: "/" },
+  { name: "Workshops", url: "/workshops" },
+]);
+
+const faqs = [
+  {
+    question: "Do I need prior improv experience to join a workshop?",
+    answer: "No. Our workshops are for all levels. We start with the basics and go at a pace that works for beginners through advanced improvisers.",
+  },
+  {
+    question: "What's the difference between a workshop and a jam?",
+    answer: "Workshops are structured learning experiences with clear curriculum and skill progression. Jams are open, recurring drop-in sessions where you can play games and build community with minimal instruction.",
+  },
+  {
+    question: "How long are the workshops?",
+    answer: "Most of our workshops are 2-3 hours long. Some specialized sessions may be longer. Check the individual workshop details for exact duration.",
+  },
+  {
+    question: "Do you offer corporate improv training?",
+    answer: "Yes. We run team workshops customized for your group. They cover communication, quick thinking, and working together under pressure—all through improv games. Email us to discuss what your team needs.",
+  },
+  {
+    question: "What should I wear and bring?",
+    answer: "Wear comfortable clothing you can move in—improv involves physical activity. Bring a water bottle. Most workshops don't require any special equipment or preparation.",
+  },
+];
+
+const faqSchema = buildFaqSchema(faqs);
+---
+
+<BaseLayout
+  title="Improv Workshops in Bangalore | Beginner to Advanced | H.E.A.R.T Beat"
+  description="Learn improv comedy with expert-led workshops in Bangalore. From beginner basics to advanced techniques, corporate team training, and specialized programs for all levels."
+  keywords="improv workshop bangalore, improv classes bengaluru, beginner improv course bangalore, corporate improv training, learn improv near me"
+  jsonLd={[itemList, breadcrumb, faqSchema]}
+>
+  <!-- Hero Section -->
+  <section class="py-20 gradient-bg">
+    <div class="container mx-auto px-4 text-center">
+      <div class="max-w-3xl mx-auto">
+        <h1 class="font-display text-5xl md:text-6xl font-bold mb-6">
+          Improv <span class="gradient-text">Workshops</span> in Bangalore
+        </h1>
+        <p class="text-xl text-dark/80 mb-8">
+          Structured classes where you learn improv skills from the basics up
+        </p>
+        <a
+          href={URLS.REGISTRATION_FORM}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-block bg-primary text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-accent transition-all duration-300 hover:scale-105"
+        >
+          Register for a Workshop
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- What Our Workshops Cover -->
+  <section class="py-20 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="font-display text-4xl font-bold mb-12 text-center">What You'll Learn</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+          <div class="bg-primary/5 rounded-lg p-8">
+            <div class="text-4xl mb-4">✨</div>
+            <h3 class="font-display text-2xl font-bold mb-4">Foundations of Improv</h3>
+            <p class="text-dark/80">
+              Master the "Yes, And" principle, scene work, character building, and the core games that power improvisational comedy.
+            </p>
+          </div>
+
+          <div class="bg-accent/5 rounded-lg p-8">
+            <div class="text-4xl mb-4">🎭</div>
+            <h3 class="font-display text-2xl font-bold mb-4">Performance Skills</h3>
+            <p class="text-dark/80">
+              Build confidence, learn stage presence, develop quick thinking, and stay creative when things go sideways.
+            </p>
+          </div>
+
+          <div class="bg-primary/5 rounded-lg p-8">
+            <div class="text-4xl mb-4">🤝</div>
+            <h3 class="font-display text-2xl font-bold mb-4">Collaboration</h3>
+            <p class="text-dark/80">
+              Learn to listen, support fellow performers, build on ideas, and create scenes where everyone shines.
+            </p>
+          </div>
+
+          <div class="bg-accent/5 rounded-lg p-8">
+            <div class="text-4xl mb-4">💡</div>
+            <h3 class="font-display text-2xl font-bold mb-4">Real-World Applications</h3>
+            <p class="text-dark/80">
+              Improv skills transfer to work: better creativity, clearer communication, faster problem-solving.
+            </p>
+          </div>
+        </div>
+
+        <p class="text-lg text-dark/80 text-center leading-relaxed">
+          Our workshops work for beginners nervous about performing, experienced players looking to deepen their skills, and teams
+          wanting to work better together. Everyone gets hands-on practice in a space where it's safe to try and fail.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Upcoming Workshops -->
+  {
+    workshopEvents.length > 0 && (
+      <section class="py-20 bg-secondary/5">
+        <div class="container mx-auto px-4">
+          <h2 class="font-display text-4xl font-bold mb-12 text-center">Upcoming Workshops</h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {workshopEvents.map((event) => (
+              <a href={`/events/${createFullSlug(event.id, event.title)}`} class="group">
+                <div class="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all border border-secondary/30 p-6 h-full flex flex-col">
+                  <div class="mb-4">
+                    <span class="text-3xl">📚</span>
+                  </div>
+                  <h3 class="font-display text-xl font-bold mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                    {event.title}
+                  </h3>
+                  <p class="text-sm text-dark/60 mb-4">{event.date}</p>
+                  <p class="text-dark/80 text-sm line-clamp-3 flex-grow mb-4">{event.description}</p>
+                  <div class="text-sm font-semibold text-primary">Learn More →</div>
+                </div>
+              </a>
+            ))}
+          </div>
+
+          {workshopEvents.length === 0 && (
+            <div class="text-center py-12">
+              <p class="text-lg text-dark/70 mb-6">
+                No upcoming workshops currently scheduled. Check back soon or subscribe to our newsletter for announcements!
+              </p>
+              <a
+                href={URLS.REGISTRATION_FORM}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-block bg-primary text-white px-6 py-3 rounded-full hover:bg-accent transition-colors font-medium"
+              >
+                Register Your Interest
+              </a>
+            </div>
+          )}
+        </div>
+      </section>
+    )
+  }
+
+  <!-- FAQ Section -->
+  <section class="py-20 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="font-display text-4xl font-bold mb-12 text-center">Frequently Asked Questions</h2>
+
+        <div class="space-y-6">
+          {
+            faqs.map((faq, i) => (
+              <details class="group border border-secondary/30 rounded-lg p-6 hover:border-primary/50 transition-colors cursor-pointer">
+                <summary class="font-display text-lg font-bold flex justify-between items-center text-dark hover:text-primary transition-colors">
+                  {faq.question}
+                  <span class="ml-4">+</span>
+                </summary>
+                <p class="text-dark/80 mt-4 leading-relaxed">{faq.answer}</p>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-20 gradient-bg text-center">
+    <div class="container mx-auto px-4">
+      <div class="max-w-2xl mx-auto">
+        <h2 class="font-display text-4xl font-bold mb-6">Ready to Start Learning?</h2>
+        <p class="text-xl text-dark/80 mb-8">
+          Join improvisers across Bangalore who want to get better at thinking fast and performing under pressure
+        </p>
+        <a
+          href={URLS.REGISTRATION_FORM}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-block bg-primary text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-accent transition-all duration-300 hover:scale-105"
+        >
+          Register Now
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

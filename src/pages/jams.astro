@@ -1,0 +1,272 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { createFullSlug } from "../utils/slug.js";
+import { URLS } from "../constants.js";
+import { regularEvents } from "../content/events/all-events.js";
+import { buildItemList, buildBreadcrumb, buildFaqSchema } from "../utils/schema.js";
+import { resolveEventDates } from "../utils/schema.js";
+
+const jamEvents = regularEvents;
+
+const jamList = jamEvents.map((e) => ({
+  name: e.title,
+  url: `/events/${createFullSlug(e.id, e.title)}`,
+}));
+
+const itemList = buildItemList(jamList, { name: "Jams", url: "/jams" });
+const breadcrumb = buildBreadcrumb([
+  { name: "Home", url: "/" },
+  { name: "Improv Jams", url: "/jams" },
+]);
+
+const faqs = [
+  {
+    question: "Do I need any improv experience to join a jam?",
+    answer: "No. Our jams are open to all levels—from people who performed in theater class to folks trying improv for the first time. Everyone has a place.",
+  },
+  {
+    question: "Can I just show up, or do I need to register?",
+    answer: "Most of our jams welcome both registered participants and walk-ins. However, registration helps us plan seating and materials. For the most up-to-date info, check the specific jam's page or contact us directly.",
+  },
+  {
+    question: "Is the online jam free? What about in-person?",
+    answer: "All our jams operate on a pay-what-you-can model or have suggested donations. This keeps improv accessible to everyone while supporting our community. Whether online or in-person, you can participate at whatever level works for you.",
+  },
+  {
+    question: "Where exactly do the in-person jams meet?",
+    answer: "Our in-person jams meet at venues across Bangalore—Cubbon Park for outdoor sessions, various studios for indoor jams. Exact locations and detailed directions are provided upon registration.",
+  },
+  {
+    question: "How often do the jams happen?",
+    answer: "All our jams are weekly recurring events. Check the jam's page for the specific day and time. Whether it's Thursday online, Saturday in a studio, or Sunday at Cubbon Park, there's a regular slot for you.",
+  },
+  {
+    question: "What do I need to bring to an in-person jam?",
+    answer: "Just yourself! For outdoor sessions at Cubbon Park, bring water, sunscreen, and something to sit on if you'd like. For studio jams, wear comfortable clothes you can move freely in.",
+  },
+];
+
+const faqSchema = buildFaqSchema(faqs);
+---
+
+<BaseLayout
+  title="Weekly Improv Jams in Bangalore | Cubbon Park & Online | H.E.A.R.T Beat"
+  description="Join our weekly improv jams in Bangalore and online. Drop-in sessions in Cubbon Park, HSR Layout, and Zoom. All levels welcome. Affordable pay-what-you-can pricing."
+  keywords="improv jam bangalore, improv jam bengaluru, cubbon park improv, online improv jam india, drop in improv bangalore"
+  jsonLd={[itemList, breadcrumb, faqSchema]}
+>
+  <!-- Hero Section -->
+  <section class="py-20 gradient-bg">
+    <div class="container mx-auto px-4 text-center">
+      <div class="max-w-3xl mx-auto">
+        <h1 class="font-display text-5xl md:text-6xl font-bold mb-6">
+          Weekly Improv <span class="gradient-text">Jams</span>
+        </h1>
+        <p class="text-xl text-dark/80 mb-8">
+          Drop-in improv sessions across Bangalore and online—every week, all levels welcome
+        </p>
+        <p class="text-lg text-dark/70 mb-8 font-semibold">
+          Pay-what-you-can • Community-run • Judgment-free
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- What Are Jams -->
+  <section class="py-20 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="font-display text-4xl font-bold mb-8 text-center">What Are Improv Jams?</h2>
+
+        <p class="text-lg text-dark/80 mb-6 leading-relaxed">
+          Improv jams are weekly drop-in sessions where people come to play improv games and scene work. Unlike a structured workshop, jams run on community energy—no lesson plan, just a group of people who want to play.
+        </p>
+
+        <p class="text-lg text-dark/80 mb-8 leading-relaxed">
+          Whether you've performed for years or tried improv once and liked it, jams are for you. Show up, play games, see what happens. The main appeal: you get to improvise with other people, without pressure or evaluation.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-primary/5 rounded-lg p-6">
+            <div class="text-4xl mb-4">🎯</div>
+            <h3 class="font-display text-xl font-bold mb-3">For Everyone</h3>
+            <p class="text-dark/80">From first-timers to experienced performers—all levels, all backgrounds welcome.</p>
+          </div>
+
+          <div class="bg-accent/5 rounded-lg p-6">
+            <div class="text-4xl mb-4">🤝</div>
+            <h3 class="font-display text-xl font-bold mb-3">Community-Run</h3>
+            <p class="text-dark/80">Run by community members who host these sessions regularly because they love improv.</p>
+          </div>
+
+          <div class="bg-primary/5 rounded-lg p-6">
+            <div class="text-4xl mb-4">💰</div>
+            <h3 class="font-display text-xl font-bold mb-3">Accessible</h3>
+            <p class="text-dark/80">Pay-what-you-can pricing means improv is truly for everyone, regardless of budget.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Current Jams -->
+  <section class="py-20 bg-secondary/5">
+    <div class="container mx-auto px-4">
+      <h2 class="font-display text-4xl font-bold mb-12 text-center">Our Weekly Jams</h2>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        {
+          jamEvents.map((jam) => (
+            <a href={`/events/${createFullSlug(jam.id, jam.title)}`} class="group">
+              <div class="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all border border-secondary/30 p-8 h-full flex flex-col">
+                <div class="mb-4">
+                  <span class="text-5xl">
+                    {jam.category === "online jam" && "💻"}
+                    {jam.category === "outdoor jam" && "🌳"}
+                    {jam.category === "in-person jam" && "🎭"}
+                  </span>
+                </div>
+
+                <h3 class="font-display text-2xl font-bold mb-3 group-hover:text-primary transition-colors">
+                  {jam.title}
+                </h3>
+
+                <p class="text-lg font-bold text-primary mb-2">{jam.date}</p>
+                <p class="text-dark/70 text-sm mb-4">{jam.time}</p>
+
+                <p class="text-dark/80 mb-4 flex-grow">{jam.description}</p>
+
+                <div class="space-y-2 text-sm mb-6">
+                  <p>
+                    <span class="font-semibold">Price:</span> {jam.price}
+                  </p>
+                  <p>
+                    <span class="font-semibold">Duration:</span> {jam.duration}
+                  </p>
+                </div>
+
+                <div class="bg-primary/5 rounded p-3 text-center">
+                  <div class="font-semibold text-primary">Register Now →</div>
+                </div>
+              </div>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Join -->
+  <section class="py-20 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="font-display text-4xl font-bold mb-12 text-center">Why Join Our Jams?</h2>
+
+        <div class="space-y-8">
+          <div class="flex gap-6">
+            <div class="flex-shrink-0">
+              <div class="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">
+                <span class="text-2xl">✨</span>
+              </div>
+            </div>
+            <div>
+              <h3 class="font-display text-xl font-bold mb-2">Practice in a Safe Space</h3>
+              <p class="text-dark/80">
+                Jams are judgment-free zones. You won't get laughed at for trying something new—you'll get supported and
+                celebrated.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex gap-6">
+            <div class="flex-shrink-0">
+              <div class="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">
+                <span class="text-2xl">🤝</span>
+              </div>
+            </div>
+            <div>
+              <h3 class="font-display text-xl font-bold mb-2">Build Community</h3>
+              <p class="text-dark/80">
+                Meet fellow improvisers, make friends, and become part of Bangalore's vibrant improv scene. Many lifelong
+                friendships start in jams.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex gap-6">
+            <div class="flex-shrink-0">
+              <div class="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">
+                <span class="text-2xl">🚀</span>
+              </div>
+            </div>
+            <div>
+              <h3 class="font-display text-xl font-bold mb-2">Grow Your Skills</h3>
+              <p class="text-dark/80">
+                Regular practice is the best teacher. The more you jam, the sharper your instincts become and the more
+                confident you grow.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex gap-6">
+            <div class="flex-shrink-0">
+              <div class="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">
+                <span class="text-2xl">🎉</span>
+              </div>
+            </div>
+            <div>
+              <h3 class="font-display text-xl font-bold mb-2">Pure Fun</h3>
+              <p class="text-dark/80">
+                At its heart, improv is about having fun and creating joy. Jams are where the magic happens—laughter,
+                surprises, and unforgettable moments.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="py-20 bg-secondary/5">
+    <div class="container mx-auto px-4">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="font-display text-4xl font-bold mb-12 text-center">Frequently Asked Questions</h2>
+
+        <div class="space-y-6">
+          {
+            faqs.map((faq, i) => (
+              <details class="group border border-secondary/30 rounded-lg p-6 hover:border-primary/50 transition-colors cursor-pointer">
+                <summary class="font-display text-lg font-bold flex justify-between items-center text-dark hover:text-primary transition-colors">
+                  {faq.question}
+                  <span class="ml-4">+</span>
+                </summary>
+                <p class="text-dark/80 mt-4 leading-relaxed">{faq.answer}</p>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-20 gradient-bg text-center">
+    <div class="container mx-auto px-4">
+      <div class="max-w-2xl mx-auto">
+        <h2 class="font-display text-4xl font-bold mb-6">Ready to Jam?</h2>
+        <p class="text-xl text-dark/80 mb-8">
+          Pick a jam that fits your schedule, show up, and start playing
+        </p>
+        <a
+          href={URLS.REGISTRATION_FORM}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-block bg-primary text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-accent transition-all duration-300 hover:scale-105"
+        >
+          Register Now
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

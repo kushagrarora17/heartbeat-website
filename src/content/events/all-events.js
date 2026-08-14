@@ -314,24 +314,6 @@ export const allEvents = [
   },
 ];
 
-// compute next (or same) weekday date as YYYY-MM-DD (0 = Sunday, 4 = Thursday)
-function nextWeekdayDate(targetWeekday, { includeToday = true } = {}) {
-  const today = new Date();
-  const day = today.getDay();
-  let delta = (targetWeekday - day + 7) % 7;
-  if (delta === 0 && !includeToday) delta = 7;
-  const target = new Date(today);
-  target.setDate(today.getDate() + delta);
-  const yyyy = target.getFullYear();
-  const mm = String(target.getMonth() + 1).padStart(2, "0");
-  const dd = String(target.getDate()).padStart(2, "0");
-  return `${yyyy}-${mm}-${dd}`;
-}
-
-const nextThursday = nextWeekdayDate(4, { includeToday: true });
-const nextSaturday = nextWeekdayDate(6, { includeToday: true });
-const nextSunday = nextWeekdayDate(0, { includeToday: true });
-
 export const regularEvents = [
   {
     id: 101,

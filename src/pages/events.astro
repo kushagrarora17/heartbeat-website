@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { createFullSlug } from "../utils/slug.js";
 import { URLS } from "../constants.js";
+import { buildItemList, buildBreadcrumb } from "../utils/schema.js";
 import {
   allEvents as events,
   regularEvents,
@@ -120,11 +121,23 @@ const processedWeeklyEvents = (regularEvents || []).map((event) => {
     buttonText: isPast ? "Event passed" : "Drop-in",
   };
 });
+
+const allEventsList = [...processedEvents, ...processedWeeklyEvents].map((e) => ({
+  name: e.title,
+  url: `/events/${createFullSlug(e.id, e.title)}`,
+}));
+const itemList = buildItemList(allEventsList, { name: "Events", url: "/events" });
+const breadcrumb = buildBreadcrumb([
+  { name: "Home", url: "/" },
+  { name: "Events", url: "/events" },
+]);
 ---
 
 <BaseLayout
   title="Events - H.E.A.R.T Beat Improv"
   description="Discover upcoming improv comedy workshops, performances, and events in Bangalore. Join H.E.A.R.T Beat Improv for an unforgettable experience."
+  keywords="improv events bangalore, improv comedy shows bengaluru, improv workshops bangalore, improv performances, improv jam schedule"
+  jsonLd={[itemList, breadcrumb]}
 >
   <!-- Weekly Events (new, top) -->
   <section
@@ -204,6 +217,43 @@ const processedWeeklyEvents = (regularEvents || []).map((event) => {
             </div>
           ))
         }
+      </div>
+    </div>
+  </section>
+
+  <!-- Discovery Section -->
+  <section class="py-12 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+        <a href="/workshops" class="group">
+          <div class="bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg p-8 border border-primary/20 hover:border-primary/50 transition-all">
+            <div class="text-4xl mb-4">📚</div>
+            <h3 class="font-display font-bold text-xl mb-2 group-hover:text-primary transition-colors">
+              Structured Workshops
+            </h3>
+            <p class="text-dark/70 text-sm">
+              Learn improv skills with clear curriculum, from beginner basics to advanced techniques.
+            </p>
+            <div class="mt-4 text-primary font-semibold group-hover:translate-x-1 transition-transform">
+              View Workshops →
+            </div>
+          </div>
+        </a>
+
+        <a href="/jams" class="group">
+          <div class="bg-gradient-to-br from-accent/10 to-primary/10 rounded-lg p-8 border border-accent/20 hover:border-accent/50 transition-all">
+            <div class="text-4xl mb-4">🎭</div>
+            <h3 class="font-display font-bold text-xl mb-2 group-hover:text-primary transition-colors">
+              Weekly Improv Jams
+            </h3>
+            <p class="text-dark/70 text-sm">
+              Drop-in sessions every week. No experience needed—just show up and play with the community.
+            </p>
+            <div class="mt-4 text-primary font-semibold group-hover:translate-x-1 transition-transform">
+              View Jams →
+            </div>
+          </div>
+        </a>
       </div>
     </div>
   </section>

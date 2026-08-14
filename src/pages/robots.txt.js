@@ -1,8 +1,11 @@
+import { SEO } from '../constants.js';
+
 export async function GET() {
   const robotsTxt = `User-agent: *
 Allow: /
+Disallow: /thank-you
 
-Sitemap: https://heartbeatimprov.com/sitemap.xml
+Sitemap: ${SEO.SITE_URL}/sitemap.xml
 `;
 
   return new Response(robotsTxt, {

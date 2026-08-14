@@ -1,122 +1,8 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { createFullSlug } from "../utils/slug.js";
-
-// Sample articles data - in a real app, this would come from a CMS or API
-const allArticles = [
-  {
-    id: 1,
-    title: "The Art of 'Yes, And': Building on Ideas in Improv",
-    excerpt:
-      "Learn the fundamental principle of improv comedy and how it can transform your creative collaborations both on and off stage.",
-    content: "The golden rule of improv...",
-    author: "Priya Sharma",
-    date: "2025-10-15",
-    readTime: "5 min read",
-    category: "technique",
-    tags: ["basics", "collaboration", "yes-and"],
-    featured: true,
-    image: "/images/yes-and-article.jpg",
-  },
-  {
-    id: 2,
-    title: "From Stage Fright to Spotlight: Overcoming Performance Anxiety",
-    excerpt:
-      "Practical tips and techniques to help you conquer your fears and embrace the joy of performing in front of an audience.",
-    content: "Stage fright is natural...",
-    author: "Arjun Menon",
-    date: "2025-10-10",
-    readTime: "7 min read",
-    category: "personal-growth",
-    tags: ["confidence", "anxiety", "performance"],
-    featured: false,
-    image: "/images/stage-fright-article.jpg",
-  },
-  {
-    id: 3,
-    title: "Building Characters: Creating Memorable Personas in Improv",
-    excerpt:
-      "Discover techniques for developing rich, consistent characters that bring depth and humor to your improv scenes.",
-    content: "Character development in improv...",
-    author: "Sneha Patel",
-    date: "2025-10-05",
-    readTime: "6 min read",
-    category: "technique",
-    tags: ["character", "development", "acting"],
-    featured: true,
-    image: "/images/character-building.jpg",
-  },
-  {
-    id: 4,
-    title: "The Business Benefits of Improv: Skills for the Workplace",
-    excerpt:
-      "How improv comedy training can enhance your professional skills, from leadership to creative problem-solving.",
-    content: "Corporate improv training...",
-    author: "Rajesh Kumar",
-    date: "2025-09-28",
-    readTime: "8 min read",
-    category: "business",
-    tags: ["corporate", "leadership", "skills"],
-    featured: false,
-    image: "/images/business-improv.jpg",
-  },
-  {
-    id: 5,
-    title: "Long-form vs Short-form: Understanding Improv Formats",
-    excerpt:
-      "Explore the differences between various improv formats and find the style that resonates with your creative vision.",
-    content: "Improv comes in many forms...",
-    author: "Maya Iyer",
-    date: "2025-09-20",
-    readTime: "4 min read",
-    category: "technique",
-    tags: ["formats", "longform", "shortform"],
-    featured: false,
-    image: "/images/improv-formats.jpg",
-  },
-  {
-    id: 6,
-    title: "Creating Safe Spaces: The Importance of Trust in Improv",
-    excerpt:
-      "Why psychological safety is crucial for great improv and how to foster an environment where creativity can flourish.",
-    content: "Trust is the foundation...",
-    author: "Deepak Nair",
-    date: "2025-09-15",
-    readTime: "6 min read",
-    category: "community",
-    tags: ["safety", "trust", "community"],
-    featured: true,
-    image: "/images/safe-spaces.jpg",
-  },
-  {
-    id: 7,
-    title: "Improv Games for Beginners: Start Your Journey Here",
-    excerpt:
-      "A comprehensive guide to essential improv games and exercises perfect for newcomers to the art form.",
-    content: "Starting your improv journey...",
-    author: "Kavitha Reddy",
-    date: "2025-09-08",
-    readTime: "10 min read",
-    category: "beginner",
-    tags: ["games", "exercises", "beginners"],
-    featured: false,
-    image: "/images/improv-games.jpg",
-  },
-  {
-    id: 8,
-    title: "The History of Improv Comedy in India",
-    excerpt:
-      "Trace the evolution of improvisational comedy in India and discover how it has grown into a vibrant art form.",
-    content: "Improv comedy in India...",
-    author: "Vikram Joshi",
-    date: "2025-08-30",
-    readTime: "12 min read",
-    category: "history",
-    tags: ["history", "india", "evolution"],
-    featured: false,
-    image: "/images/improv-history.jpg",
-  },
-];
+import { buildItemList, buildBreadcrumb } from "../utils/schema.js";
+import { allArticles } from "../content/articles/all-articles.js";
 
 const categories = [
   { value: "all", label: "All Articles" },
@@ -130,11 +16,23 @@ const categories = [
 
 const featuredArticles = allArticles.filter((article) => article.featured);
 // const regularArticles = allArticles.filter(article => !article.featured);
+
+const articlesList = allArticles.map((a) => ({
+  name: a.title,
+  url: `/articles/${createFullSlug(a.id, a.title)}`,
+}));
+const itemList = buildItemList(articlesList, { name: "Articles", url: "/articles" });
+const breadcrumb = buildBreadcrumb([
+  { name: "Home", url: "/" },
+  { name: "Articles", url: "/articles" },
+]);
 ---
 
 <BaseLayout
   title="Articles - H.E.A.R.T Beat Improv"
   description="Explore our collection of articles on improv comedy techniques, personal growth, and community insights. Learn from experienced improvisers and grow your skills."
+  keywords="improv comedy tips, improv technique guide, improv tutorials, learn improv online, improv comedy articles"
+  jsonLd={[itemList, breadcrumb]}
 >
   <!-- Hero Section -->
   <section class="py-20 gradient-bg">
@@ -357,6 +255,7 @@ const featuredArticles = allArticles.filter((article) => article.featured);
               data-author={article.author.toLowerCase()}
               data-date={article.date}
               data-read-time={parseInt(article.readTime)}
+              data-tags={article.tags.join(",")}
             >
               <div class="h-48 bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center relative">
                 <span class="text-4xl">
@@ -407,9 +306,9 @@ const featuredArticles = allArticles.filter((article) => article.featured);
 
                 <div class="flex flex-wrap gap-2 mb-4">
                   {article.tags.slice(0, 3).map((tag) => (
-                    <span class="bg-gray-100 text-dark/70 px-2 py-1 rounded text-xs">
+                    <a href={`/articles?tag=${encodeURIComponent(tag)}`} class="bg-gray-100 hover:bg-primary hover:text-white text-dark/70 hover:text-white px-2 py-1 rounded text-xs transition-colors">
                       #{tag}
-                    </span>
+                    </a>
                   ))}
                 </div>
 
@@ -525,6 +424,10 @@ const featuredArticles = allArticles.filter((article) => article.featured);
         const sortValue = sortFilter.value;
         const searchValue = searchInput.value.toLowerCase();
 
+        // Get tag from URL query params
+        const urlParams = new URLSearchParams(window.location.search);
+        const tagValue = urlParams.get("tag")?.toLowerCase() || "";
+
         const articleCards = Array.from(
           document.querySelectorAll(".article-card")
         ) as HTMLElement[];
@@ -536,6 +439,7 @@ const featuredArticles = allArticles.filter((article) => article.featured);
           const cardTitle = card.dataset.title;
           const cardExcerpt = card.dataset.excerpt;
           const cardAuthor = card.dataset.author;
+          const cardTags = card.dataset.tags?.split(",").map(t => t.trim().toLowerCase()) || [];
 
           const categoryMatch =
             categoryValue === "all" || cardCategory === categoryValue;
@@ -544,8 +448,9 @@ const featuredArticles = allArticles.filter((article) => article.featured);
             cardTitle?.includes(searchValue) ||
             cardExcerpt?.includes(searchValue) ||
             cardAuthor?.includes(searchValue);
+          const tagMatch = tagValue === "" || cardTags.includes(tagValue);
 
-          if (categoryMatch && searchMatch) {
+          if (categoryMatch && searchMatch && tagMatch) {
             card.style.display = "block";
             visibleCards.push(card);
           } else {
